@@ -1,73 +1,95 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
-  DOCUMENTS,
-  TOPIC_COLORS,
   tokenize,
   buildVocab,
   vectorize,
   cosineSimilarity,
-} from "../rag-engine";
+  type Product,
+} from "@/lib/rag-engine";
 
 export default function VectorizationDemo() {
+  const [products, setProducts] = useState<Product[]>([]);
   const [query, setQuery] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  const vocab = useMemo(() => buildVocab(DOCUMENTS), []);
+  // Fetch real products from Supabase via your existing API
+  useEffect(() => {
+    fetch("/api/products")
+      .then((r) => r.json())
+      .then((data) => {
+        setProducts(data.slice(0, 6)); // show first 6 like before
+        setLoading(false);
+      });
+  }, []);
+
+  const vocab = useMemo(() => buildVocab(products), [products]);
+
   const docVectors = useMemo(
-    () => DOCUMENTS.map((d) => vectorize(d.text, vocab)),
-    [vocab]
+    () =>
+      products.map((p) => vectorize(`${p.name} ${p.description ?? ""}`, vocab)),
+    [products, vocab]
   );
 
   const queryTokens = tokenize(query);
   const queryVector = query.trim() ? vectorize(query, vocab) : null;
 
   const similarities = queryVector
-    ? DOCUMENTS.map((d, i) => ({
-        doc: d,
-        score: cosineSimilarity(queryVector, docVectors[i]),
-      })).sort((a, b) => b.score - a.score)
+    ? products
+        .map((p, i) => ({
+          product: p,
+          score: cosineSimilarity(queryVector, docVectors[i]),
+        }))
+        .sort((a, b) => b.score - a.score)
     : null;
+
+  if (loading)
+    return <p className="p-8 font-mono text-sm">Loading products…</p>;
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 font-mono">
-      <h1 className="text-2xl font-bold mb-1">Text Vectorization</h1>
+      <h1 className="text-2xl font-bold mb-1">Product Vectorization</h1>
       <p className="text-sm text-gray-500 mb-8">
-        From words to numbers — no libraries, just code.
+        From product descriptions to numbers — no libraries, just code.
       </p>
 
-      {/* Step 1: Documents */}
-      <Section title="Step 1: The Documents" subtitle="our knowledge base">
+      {/* Step 1: Products */}
+      <Section title="Step 1: The Products" subtitle="from your Supabase DB">
         <div className="grid gap-2">
-          {DOCUMENTS.map((d) => (
+          {products.map((p) => (
             <div
-              key={d.id}
-              className="bg-gray-950 rounded px-3 py-2 text-sm border-l-3"
-              style={{ borderLeftColor: TOPIC_COLORS[d.topic] }}
+              key={p.id}
+              className="bg-gray-950 rounded px-3 py-2 text-sm border-l-2 border-sky-500"
             >
-              <span
-                className="text-xs font-bold mr-2"
-                style={{ color: TOPIC_COLORS[d.topic] }}
-              >
-                {d.topic}
+              <span className="text-xs font-bold text-sky-400 mr-2">
+                €{Number(p.price).toFixed(2)}
               </span>
-              {d.text}
+              <span className="font-semibold">{p.name}</span>
+              {p.description && (
+                <span className="text-gray-400 ml-2">— {p.description}</span>
+              )}
             </div>
           ))}
         </div>
       </Section>
 
       {/* Step 2: Tokenize */}
-      <Section title="Step 2: Tokenize" subtitle="split into meaningful words">
+      <Section title="Step 2: Tokenize" subtitle="name + description → words">
         <Code>{`function tokenize(text) {
   return text
     .toLowerCase()
-    .replace(/[^a-z\\s]/g, "")  // remove punctuation
-    .split(/\\s+/)               // split on whitespace
+    .replace(/[^a-z\\s]/g, "")
+    .split(/\\s+/)
     .filter(w => w.length > 1 && !stopWords.has(w));
-}`}</Code>
-        <Output label="Example">
-          {`tokenize("${DOCUMENTS[0].text.slice(0, 50)}...")\n→ [${tokenize(DOCUMENTS[0].text)
+}
+// Input:  name + description combined`}</Code>
+        <Output label="Example — first product">
+          {`tokenize("${products[0]?.name} ${
+            products[0]?.description ?? ""
+          }")\n→ [${tokenize(
+            `${products[0]?.name} ${products[0]?.description ?? ""}`
+          )
             .map((w) => `"${w}"`)
             .join(", ")}]`}
         </Output>
@@ -78,34 +100,25 @@ export default function VectorizationDemo() {
         title="Step 3: Build Vocabulary"
         subtitle={`${vocab.length} unique words`}
       >
-        <Code>{`const vocab = [...new Set(docs.flatMap(d => tokenize(d.text)))].sort();`}</Code>
+        <Code>{`const vocab = [...new Set(
+  products.flatMap(p => tokenize(p.name + " " + p.description))
+)].sort();`}</Code>
         <Output label={`Vocabulary (${vocab.length} words)`}>
           {vocab.join(", ")}
         </Output>
       </Section>
 
-      {/* Step 4: Vectorize */}
+      {/* Step 4: Vectors */}
       <Section
         title="Step 4: Vectorize"
-        subtitle="count each vocab word per document"
+        subtitle="count each vocab word per product"
       >
-        <Code>{`function vectorize(text, vocab) {
-  const tokens = tokenize(text);
-  return vocab.map(word => tokens.filter(t => t === word).length);
-}
-// "I love pizza" → [0, 0, 0, ..., 1, ..., 1, ...]
-//                                  ^love    ^pizza`}</Code>
         <div className="mt-3 space-y-3">
-          {DOCUMENTS.map((d, di) => (
-            <div key={d.id}>
-              <div
-                className="text-xs mb-1"
-                style={{ color: TOPIC_COLORS[d.topic] }}
-              >
-                Doc {d.id}: &ldquo;{d.text.slice(0, 50)}&hellip;&rdquo;
-              </div>
+          {products.map((p, pi) => (
+            <div key={p.id}>
+              <div className="text-xs text-sky-400 mb-1">{p.name}</div>
               <div className="flex gap-px flex-wrap">
-                {docVectors[di].map((v, vi) => (
+                {docVectors[pi].map((v, vi) => (
                   <div
                     key={vi}
                     className="w-3.5 h-6 flex items-center justify-center text-[0.55rem] rounded-sm"
@@ -127,54 +140,39 @@ export default function VectorizationDemo() {
         </div>
       </Section>
 
-      {/* Step 5: Cosine Similarity */}
+      {/* Step 5: Similarity matrix */}
       <Section
-        title="Step 5: Compare Vectors"
-        subtitle="cosine similarity"
+        title="Step 5: Cosine Similarity Matrix"
+        subtitle="which products are similar?"
       >
-        <Code>{`function cosineSimilarity(a, b) {
-  const dot = a.reduce((sum, ai, i) => sum + ai * b[i], 0);
-  const magA = Math.sqrt(a.reduce((s, v) => s + v * v, 0));
-  const magB = Math.sqrt(b.reduce((s, v) => s + v * v, 0));
-  return magA && magB ? dot / (magA * magB) : 0;
-}
-// 1.0 = identical, 0.0 = completely different`}</Code>
         <div className="overflow-x-auto mt-2">
           <table className="text-xs border-collapse w-full">
             <thead>
               <tr>
                 <th className="p-1.5 border border-gray-800 bg-gray-950" />
-                {DOCUMENTS.map((d) => (
+                {products.map((p) => (
                   <th
-                    key={d.id}
-                    className="p-1.5 border border-gray-800 bg-gray-950"
-                    style={{ color: TOPIC_COLORS[d.topic] }}
+                    key={p.id}
+                    className="p-1.5 border border-gray-800 bg-gray-950 text-sky-400 max-w-16"
                   >
-                    Doc {d.id}
-                    <br />
-                    <span className="text-[0.6rem]">{d.topic}</span>
+                    {p.name.split(" ")[0]}
                   </th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {DOCUMENTS.map((d1, i) => (
-                <tr key={d1.id}>
-                  <th
-                    className="p-1.5 border border-gray-800 bg-gray-950"
-                    style={{ color: TOPIC_COLORS[d1.topic] }}
-                  >
-                    Doc {d1.id}
+              {products.map((p1, i) => (
+                <tr key={p1.id}>
+                  <th className="p-1.5 border border-gray-800 bg-gray-950 text-sky-400 text-left">
+                    {p1.name.split(" ")[0]}
                   </th>
-                  {DOCUMENTS.map((_, j) => {
+                  {products.map((_, j) => {
                     const sim = cosineSimilarity(docVectors[i], docVectors[j]);
                     return (
                       <td
                         key={j}
                         className="p-1.5 border border-gray-800 text-center"
-                        style={{
-                          background: `rgba(56,189,248,${sim * 0.6})`,
-                        }}
+                        style={{ background: `rgba(56,189,248,${sim * 0.6})` }}
                       >
                         {sim.toFixed(2)}
                       </td>
@@ -187,16 +185,16 @@ export default function VectorizationDemo() {
         </div>
       </Section>
 
-      {/* Step 6: Try it */}
+      {/* Step 6: Live search */}
       <Section
         title="Step 6: Try It"
-        subtitle="type a query, see similarity scores"
+        subtitle="type a query, see which products match"
       >
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Type a query... e.g. 'delicious pizza dinner'"
+          placeholder='e.g. "cheap gaming laptop" or "best for travel"'
           className="w-full bg-gray-950 border border-gray-800 rounded px-3 py-2 text-sm focus:outline-none focus:border-sky-500"
         />
         {queryVector && (
@@ -204,27 +202,20 @@ export default function VectorizationDemo() {
             <p className="text-xs text-gray-500">
               Tokens: [{queryTokens.map((w) => `"${w}"`).join(", ")}]
             </p>
-            <p className="text-xs text-gray-500">
-              Vector: [{queryVector.join(", ")}]
-            </p>
             {similarities!.map((r) => {
               const pct = Math.round(r.score * 100);
               return (
-                <div key={r.doc.id} className="flex items-center gap-3 text-sm">
-                  <span
-                    className="w-14 text-xs"
-                    style={{ color: TOPIC_COLORS[r.doc.topic] }}
-                  >
-                    Doc {r.doc.id}
+                <div
+                  key={r.product.id}
+                  className="flex items-center gap-3 text-sm"
+                >
+                  <span className="w-32 text-xs text-sky-400 truncate">
+                    {r.product.name}
                   </span>
                   <div className="flex-1 bg-gray-900 rounded h-4 overflow-hidden">
                     <div
-                      className="h-full rounded transition-all duration-300"
-                      style={{
-                        width: `${pct}%`,
-                        background: TOPIC_COLORS[r.doc.topic],
-                        opacity: 0.7,
-                      }}
+                      className="h-full rounded transition-all duration-300 bg-sky-500"
+                      style={{ width: `${pct}%`, opacity: 0.7 }}
                     />
                   </div>
                   <span className="w-12 text-right text-xs">{pct}%</span>
@@ -238,6 +229,7 @@ export default function VectorizationDemo() {
   );
 }
 
+// ─── Shared UI components ──────────────────────────────────────
 function Section({
   title,
   subtitle,

@@ -26,14 +26,20 @@ type Status = "idle" | "loading" | "succeeded" | "failed";
 
 type ProductsState = {
   items: Product[];
+  current: Product | null;
+  similar: Product[];
   status: Status;
+  currentStatus: Status;
   error: string | null;
   selectedId: string | null;
 };
 
 const initialState: ProductsState = {
   items: [],
+  current: null,
+  similar: [],
   status: "idle",
+  currentStatus: "idle",
   error: null,
   selectedId: null,
 };
@@ -46,7 +52,25 @@ export const fetchProducts = createAsyncThunk<Product[]>(
     return res.json();
   }
 );
+// 1. Fetch one product by id
+export const fetchProductById = createAsyncThunk<Product, string>(
+  "products/fetchById",
+  async (id) => {
+    const res = await fetch(`/api/products/${id}`);
+    if (!res.ok) throw new Error("Product not found");
+    return res.json();
+  }
+);
 
+// 2. Fetch similar product by RAG
+export const fetchSimilar = createAsyncThunk<Product[], string>(
+  "products/fetchSimilar",
+  async (id) => {
+    const res = await fetch(`/api/similar/${id}`);
+    if (!res.ok) throw new Error("Failed to load similar");
+    return res.json();
+  }
+);
 const productsSlice = createSlice({
   name: "products",
   initialState,
@@ -58,8 +82,12 @@ const productsSlice = createSlice({
       state.selectedId = null;
     },
   },
+
+  // Добавь эти case'ы в extraReducers сразу после последнего .addCase для fetchProducts
+
   extraReducers: (builder) => {
     builder
+      // ── fetchProducts  ──────────────────────────
       .addCase(fetchProducts.pending, (state) => {
         state.status = "loading";
         state.error = null;
@@ -74,9 +102,35 @@ const productsSlice = createSlice({
       .addCase(fetchProducts.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message ?? "Unknown error";
-      });
+      })
+
+      // ── fetchProductById  ───────────────────────────
+      .addCase(fetchProductById.pending, (state) => {
+        state.currentStatus = "loading";
+        state.current = null;
+        state.similar = [];
+        state.error = null;
+      })
+      .addCase(
+        fetchProductById.fulfilled,
+        (state, action: PayloadAction<Product>) => {
+          state.currentStatus = "succeeded";
+          state.current = action.payload;
+        }
+      )
+      .addCase(fetchProductById.rejected, (state, action) => {
+        state.currentStatus = "failed";
+        state.error = action.error.message ?? "Unknown error";
+      })
+
+      // ── fetchSimilar  ───────────────────────────────
+      .addCase(
+        fetchSimilar.fulfilled,
+        (state, action: PayloadAction<Product[]>) => {
+          state.similar = action.payload;
+        }
+      );
   },
 });
-
 export const { productSelected, productDeselected } = productsSlice.actions;
 export default productsSlice.reducer;

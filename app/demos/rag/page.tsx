@@ -1,10 +1,7 @@
 "use client";
 
 import { useState, useMemo, useRef, useCallback } from "react";
-import {
-  tokenize,
-  cosineSimilarity,
-} from "../rag-engine";
+import { tokenize, cosineSimilarity } from "../../../lib/rag-engine";
 
 type Doc = {
   id: number;
@@ -29,10 +26,38 @@ const SAMPLE_FILES = [
 ];
 
 const STOP_WORDS = new Set([
-  "i", "is", "my", "the", "a", "for", "and", "to", "was", "are",
-  "we", "with", "in", "on", "it", "got", "of", "so", "now", "an",
-  "at", "be", "has", "had", "its", "no", "not", "but", "or", "if",
-  "then", "than",
+  "i",
+  "is",
+  "my",
+  "the",
+  "a",
+  "for",
+  "and",
+  "to",
+  "was",
+  "are",
+  "we",
+  "with",
+  "in",
+  "on",
+  "it",
+  "got",
+  "of",
+  "so",
+  "now",
+  "an",
+  "at",
+  "be",
+  "has",
+  "had",
+  "its",
+  "no",
+  "not",
+  "but",
+  "or",
+  "if",
+  "then",
+  "than",
 ]);
 
 export default function RAGDemo() {
@@ -69,9 +94,7 @@ export default function RAGDemo() {
   const queryResult = useMemo(() => {
     if (!query.trim() || indexedDocs.length === 0) return null;
     const qTokens = tokenize(query);
-    const qVec = vocab.map(
-      (word) => qTokens.filter((t) => t === word).length
-    );
+    const qVec = vocab.map((word) => qTokens.filter((t) => t === word).length);
     const scored = indexedDocs
       .map((d) => ({ ...d, score: cosineSimilarity(qVec, d.vector) }))
       .sort((a, b) => b.score - a.score);
@@ -108,9 +131,7 @@ export default function RAGDemo() {
     setProcessingDoc({ name, text, step: "tokenize", tokens });
     await delay(1200);
 
-    const newVocab = [
-      ...new Set([...vocab, ...tokens]),
-    ].sort();
+    const newVocab = [...new Set([...vocab, ...tokens])].sort();
     const vector = newVocab.map(
       (word) => tokens.filter((t) => t === word).length
     );
@@ -143,16 +164,19 @@ export default function RAGDemo() {
   }
 
   // Read text files from a FileList (from input or drop)
-  const handleFiles = useCallback(async (files: FileList) => {
-    for (const file of Array.from(files)) {
-      if (!file.name.endsWith(".txt")) continue;
-      const text = await file.text();
-      if (text.trim()) {
-        await processAndIndex(file.name, text.trim());
+  const handleFiles = useCallback(
+    async (files: FileList) => {
+      for (const file of Array.from(files)) {
+        if (!file.name.endsWith(".txt")) continue;
+        const text = await file.text();
+        if (text.trim()) {
+          await processAndIndex(file.name, text.trim());
+        }
       }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [vocab, docs]);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    },
+    [vocab, docs]
+  );
 
   const onDrop = useCallback(
     (e: React.DragEvent) => {
@@ -240,7 +264,8 @@ export default function RAGDemo() {
                   {dragging ? "\u2193" : "\u21EA"}
                 </div>
                 <p className="text-xs text-gray-400">
-                  Drag &amp; drop <code>.txt</code> files here, or click to browse
+                  Drag &amp; drop <code>.txt</code> files here, or click to
+                  browse
                 </p>
                 <p className="text-[0.65rem] text-gray-600 mt-1">
                   Each file will be processed through the RAG pipeline live
@@ -297,7 +322,9 @@ export default function RAGDemo() {
                 <StepIndicator
                   label="Tokenize"
                   active={processingDoc.step === "tokenize"}
-                  done={["vectorize", "store", "done"].includes(processingDoc.step)}
+                  done={["vectorize", "store", "done"].includes(
+                    processingDoc.step
+                  )}
                 />
                 {processingDoc.tokens && processingDoc.step !== "done" && (
                   <div className="bg-gray-950 rounded p-2 text-[0.7rem]">
@@ -552,7 +579,9 @@ export default function RAGDemo() {
                                     key={j}
                                     className="p-1 border border-gray-800 text-center"
                                     style={{
-                                      background: `rgba(56,189,248,${sim * 0.5})`,
+                                      background: `rgba(56,189,248,${
+                                        sim * 0.5
+                                      })`,
                                     }}
                                   >
                                     {sim.toFixed(2)}
@@ -617,13 +646,17 @@ function StepIndicator({
           done
             ? "border-emerald-500 text-emerald-400 bg-emerald-500/10"
             : active
-              ? "border-sky-500 text-sky-400 bg-sky-500/10 animate-pulse"
-              : "border-gray-700 text-gray-600"
+            ? "border-sky-500 text-sky-400 bg-sky-500/10 animate-pulse"
+            : "border-gray-700 text-gray-600"
         }`}
       >
         {done ? "\u2713" : active ? "\u2022" : ""}
       </span>
-      <span className={done ? "text-emerald-400" : active ? "text-sky-400" : "text-gray-600"}>
+      <span
+        className={
+          done ? "text-emerald-400" : active ? "text-sky-400" : "text-gray-600"
+        }
+      >
         {label}
       </span>
     </div>
