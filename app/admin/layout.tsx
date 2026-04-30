@@ -76,25 +76,19 @@ export default function AdminLayout({
         <div className="flex items-center gap-6">
           <span className="font-bold text-sky-400">Admin Panel</span>
 
-          <nav className="border-b border-zinc-800">
-            <div className="flex items-center gap-6">
-              <span className="font-bold text-sky-400">Admin Panel</span>
+          <Link
+            href="/admin"
+            className="text-sm text-zinc-400 hover:text-white transition"
+          >
+            Products
+          </Link>
 
-              <Link
-                href="/admin"
-                className="text-sm text-zinc-400 hover:text-white transition"
-              >
-                Products
-              </Link>
-
-              <Link
-                href="/"
-                className="text-sm text-zinc-400 hover:text-white transition"
-              >
-                Home
-              </Link>
-            </div>
-          </nav>
+          <Link
+            href="/"
+            className="text-sm text-zinc-400 hover:text-white transition"
+          >
+            Home
+          </Link>
         </div>
       </nav>
       <main className="max-w-5xl mx-auto px-6 py-8">{children}</main>
