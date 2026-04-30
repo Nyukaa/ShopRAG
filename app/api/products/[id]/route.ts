@@ -1,35 +1,82 @@
 // app/api/products/[id]/route.ts
-export async function GET(
-  _req: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+import { NextRequest } from "next/server";
+import { supabase } from "@/lib/supabase";
+import { getAuthUser, requireRole } from "@/lib/auth";
+import { validateProduct } from "@/lib/validate-product";
+
+type Params = { params: Promise<{ id: string }> };
+
+// ── GET /api/products/[id] ────────────────────────────────────
+export async function GET(_req: NextRequest, { params }: Params) {
   const { id } = await params;
 
-  const supabase_url = process.env.SUPABASE_URL;
-  const supabase_anon_key = process.env.SUPABASE_ANON_KEY;
+  const { data, error } = await supabase
+    .from("products")
+    .select("*")
+    .eq("id", id)
+    .single();
 
-  if (!supabase_url || !supabase_anon_key) {
-    return new Response("Missing Supabase env variables", { status: 500 });
+  if (error || !data)
+    return Response.json({ error: "Product not found" }, { status: 404 });
+
+  return Response.json(data);
+}
+
+// ── PUT /api/products/[id] ────────────────────────────────────
+export async function PUT(req: NextRequest, { params }: Params) {
+  const { id } = await params;
+
+  // 1. Auth
+  const auth = await getAuthUser(req);
+  const denied = requireRole(auth, ["admin", "manager"]);
+  if (denied) return denied;
+
+  // 2. Parse body
+  let body: unknown;
+  try {
+    body = await req.json();
+  } catch {
+    return Response.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const response = await fetch(`${supabase_url}/rest/v1/products?id=eq.${id}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      apikey: supabase_anon_key,
-      Authorization: `Bearer ${supabase_anon_key}`,
-      // tells Supabase to return a single object, not an array
-      Accept: "application/vnd.pgrst.object+json",
-    },
-  });
+  // 3. Validate — reuse same sanitizer as POST
+  const validated = validateProduct(body);
+  if (!validated.ok)
+    return Response.json({ error: validated.error }, { status: 400 });
 
-  if (!response.ok) {
-    return new Response("Product not found", { status: 404 });
+  // 4. Update
+  const { data, error } = await supabase
+    .from("products")
+    .update({ ...validated.data, updated_at: new Date().toISOString() })
+    .eq("id", id)
+    .select()
+    .single();
+
+  if (error) {
+    if (error.code === "23505")
+      return Response.json({ error: "SKU already exists" }, { status: 409 });
+    return Response.json({ error: error.message }, { status: 500 });
   }
 
-  const data = await response.json();
-  return new Response(JSON.stringify(data), {
-    status: 200,
-    headers: { "Content-Type": "application/json" },
-  });
+  if (!data)
+    return Response.json({ error: "Product not found" }, { status: 404 });
+
+  return Response.json(data);
+}
+
+// ── DELETE /api/products/[id] ─────────────────────────────────
+export async function DELETE(req: NextRequest, { params }: Params) {
+  const { id } = await params;
+
+  // 1. Auth — только admin
+  const auth = await getAuthUser(req);
+  const denied = requireRole(auth, ["admin"]); // manager не может удалять
+  if (denied) return denied;
+
+  // 2. Delete
+  const { error } = await supabase.from("products").delete().eq("id", id);
+
+  if (error) return Response.json({ error: error.message }, { status: 500 });
+
+  return new Response(null, { status: 204 }); // No Content
 }
