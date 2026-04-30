@@ -1,26 +1,54 @@
+// app/api/products/route.ts
+import { NextRequest } from "next/server";
+import { supabase } from "@/lib/supabase";
+import { getAuthUser, requireRole } from "@/lib/auth";
+import { validateProduct } from "@/lib/validate-product";
+
+// ── GET /api/products ─────────────────────────────────────────
 export async function GET() {
-  const supabase_url = process.env.SUPABASE_URL;
-  const supabase_anon_key = process.env.SUPABASE_ANON_KEY;
+  const { data, error } = await supabase
+    .from("products")
+    .select("*")
+    .order("created_at", { ascending: false });
 
-  if (!supabase_url || !supabase_anon_key) {
-    return new Response("Missing Supabase env variables", { status: 500 });
+  if (error) return Response.json({ error: error.message }, { status: 500 });
+
+  return Response.json(data);
+}
+
+// ── POST /api/products ────────────────────────────────────────
+export async function POST(req: NextRequest) {
+  // 1. Auth — только admin и manager
+  const auth = await getAuthUser(req);
+  const denied = requireRole(auth, ["admin", "manager"]);
+  if (denied) return denied;
+
+  // 2. Parse body
+  let body: unknown;
+  try {
+    body = await req.json();
+  } catch {
+    return Response.json({ error: "Invalid JSON" }, { status: 400 });
   }
-  // Fetch products from Supabase /api/test
-  const response = await fetch(`${supabase_url}/rest/v1/products`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      apikey: supabase_anon_key,
-      Authorization: `Bearer ${supabase_anon_key}`,
-    },
-  });
 
-  const data = await response.json();
+  // 3. Validate + sanitize
+  const validated = validateProduct(body);
+  if (!validated.ok)
+    return Response.json({ error: validated.error }, { status: 400 });
 
-  return new Response(JSON.stringify(data), {
-    status: 200,
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+  // 4. Insert — Supabase SDK как в старом проекте
+  const { data, error } = await supabase
+    .from("products")
+    .insert(validated.data)
+    .select()
+    .single();
+
+  if (error) {
+    // SKU уже существует (UNIQUE constraint)
+    if (error.code === "23505")
+      return Response.json({ error: "SKU already exists" }, { status: 409 });
+    return Response.json({ error: error.message }, { status: 500 });
+  }
+
+  return Response.json(data, { status: 201 });
 }

@@ -8,5 +8,6 @@ export async function GET(
   const { id } = await params;
   const { index, vocab } = await getRagIndex();
   const results = getSimilar(id, index, vocab, 3);
+  console.log(`Similar products for ${id}:`, results);
   return Response.json(results);
 }

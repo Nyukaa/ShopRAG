@@ -1,4 +1,3 @@
-// app/api/search/route.ts
 import { NextRequest } from "next/server";
 import { getRagIndex } from "@/lib/rag-cache";
 import { search } from "@/lib/rag-engine";
