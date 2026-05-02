@@ -40,7 +40,6 @@ const empty: ProductFormData = {
 export default function ProductForm({ initial, onSubmit, saving }: Props) {
   const [form, setForm] = useState<ProductFormData>({ ...empty, ...initial });
 
-  // ← всё это ВНУТРИ компонента
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState<string | null>(
@@ -51,7 +50,6 @@ export default function ProductForm({ initial, onSubmit, saving }: Props) {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
 
-  // ← тоже ВНУТРИ компонента — имеет доступ к set, setPreview, setUploading
   async function handleImageUpload(file: File) {
     setUploading(true);
 

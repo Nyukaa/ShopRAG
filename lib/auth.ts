@@ -9,20 +9,20 @@ export type AuthResult =
   | { ok: false; error: string; status: number };
 
 export async function getAuthUser(req: NextRequest): Promise<AuthResult> {
-  // 1. Достаём токен — точно как в твоём checkAuth
+  // 1. get token из Authorization header
   const authHeader = req.headers.get("Authorization");
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return { ok: false, error: "No token provided", status: 401 };
   }
   const token = authHeader.split(" ")[1];
 
-  // 2. Проверяем токен — supabase.auth.getUser как в старом проекте
+  // 2. check token через Supabase SDK — он вернёт юзера, если токен валидный
   const { data, error } = await supabase.auth.getUser(token);
   if (error || !data.user) {
     return { ok: false, error: "Invalid token", status: 401 };
   }
 
-  // 3. Получаем роль из user_roles таблицы
+  // 3. get role from Supabase
   const { data: roleRow, error: roleError } = await supabase
     .from("user_roles")
     .select("role")
