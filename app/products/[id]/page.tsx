@@ -59,28 +59,51 @@ export default function ProductPage() {
         {/* Info */}
         <div className="flex flex-col justify-between">
           <div>
-            <p className="text-xs text-zinc-500 uppercase tracking-widest mb-2">
+            <p className="text-xs text-[#B0A090]  uppercase tracking-widest mb-2">
               {current.supplier}
             </p>
-            <h1 className="text-3xl font-bold mb-3">{current.name}</h1>
-            <p className="text-zinc-400 text-sm leading-relaxed mb-6">
-              {current.description || "No description available."}
-            </p>
+            <h1 className="text-3xl font-light text-[#2C2416] dark:text-zinc-100 mb-3">
+              {current.name}
+            </h1>
 
-            {/* Meta */}
             <div className="flex flex-wrap gap-2 mb-6">
-              <Badge>{current.sku}</Badge>
-              <Badge>{current.status}</Badge>
-              <Badge>Stock: {current.stock_quantity}</Badge>
+              {/* Category badge */}
+              {current.category && (
+                <span className="inline-block text-xs px-3 py-1 rounded-full bg-[#EDE8E0] text-[#8C7E6E] mb-4">
+                  {current.category.name}
+                </span>
+              )}
+
+              <p className="text-[#8C7E6E] text-sm leading-relaxed mb-6">
+                {current.description || "No description available."}
+              </p>
+              {/* Stock as in the main page */}
+              <div className="flex items-center gap-2 mb-6">
+                <span className="text-xs font-mono text-[#B0A090]">
+                  {current.sku}
+                </span>
+                <span className="text-[#B0A090]">·</span>
+                <span
+                  className={`text-xs ${
+                    current.stock_quantity <= current.reorder_threshold
+                      ? "text-red-400"
+                      : "text-emerald-500"
+                  }`}
+                >
+                  {current.stock_quantity <= current.reorder_threshold
+                    ? `⚠ Low stock (${current.stock_quantity})`
+                    : "In stock"}
+                </span>
+              </div>
             </div>
           </div>
 
           {/* Price + CTA */}
           <div>
-            <p className="text-4xl font-bold mb-4">
+            <p className="text-4xl font-light text-[#2C2416] dark:text-zinc-100 mb-6">
               €{Number(current.price).toFixed(2)}
             </p>
-            <button className="w-full bg-sky-500 hover:bg-sky-400 text-white font-semibold py-3 rounded-xl transition">
+            <button className="w-full bg-[#2C2416] hover:bg-[#3d3020] text-white font-medium py-3 rounded-xl transition text-sm">
               Add to Cart
             </button>
           </div>
@@ -94,7 +117,7 @@ export default function ProductPage() {
           <p className="text-xs text-zinc-500 mb-5">
             Powered by TF-IDF cosine similarity
           </p>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid text-white sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {similar.map((p) => (
               <SimilarCard
                 key={p.id}
