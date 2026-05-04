@@ -38,6 +38,7 @@ export default function EditProductPage() {
           stock_quantity: String(p.stock_quantity),
           image_url: p.image_url ?? "",
           status: p.status,
+          category_id: p.category_id ?? "",
         });
         setLoading(false);
       })

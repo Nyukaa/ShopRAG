@@ -1,7 +1,7 @@
 // app/admin/_components/ProductForm.tsx
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
@@ -18,6 +18,7 @@ export type ProductFormData = {
   stock_quantity: string;
   image_url: string;
   status: "active" | "archived";
+  category_id: string;
 };
 
 type Props = {
@@ -35,6 +36,7 @@ const empty: ProductFormData = {
   stock_quantity: "0",
   image_url: "",
   status: "active",
+  category_id: "",
 };
 
 export default function ProductForm({ initial, onSubmit, saving }: Props) {
@@ -45,6 +47,16 @@ export default function ProductForm({ initial, onSubmit, saving }: Props) {
   const [preview, setPreview] = useState<string | null>(
     initial?.image_url || null
   );
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>(
+    []
+  );
+
+  useEffect(() => {
+    fetch("/api/categories")
+      .then((r) => r.json())
+      .then(setCategories)
+      .catch(() => {});
+  }, []);
 
   function set(field: keyof ProductFormData, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -214,6 +226,21 @@ export default function ProductForm({ initial, onSubmit, saving }: Props) {
         >
           <option value="active">Active</option>
           <option value="archived">Archived</option>
+        </select>
+      </Field>
+      {/* Category */}
+      <Field label="Category">
+        <select
+          value={form.category_id}
+          onChange={(e) => set("category_id", e.target.value)}
+          className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-sky-500"
+        >
+          <option value="">— No category —</option>
+          {categories.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.name}
+            </option>
+          ))}
         </select>
       </Field>
 

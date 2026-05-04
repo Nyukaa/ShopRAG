@@ -12,7 +12,7 @@ export async function GET(_req: NextRequest, { params }: Params) {
 
   const { data, error } = await supabase
     .from("products")
-    .select("*")
+    .select("*, category:categories(id, name)")
     .eq("id", id)
     .single();
 
