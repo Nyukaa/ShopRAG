@@ -75,7 +75,12 @@ export default function AdminLayout({
       <nav className="border-b border-zinc-800 px-6 py-3 flex items-center justify-between">
         <div className="flex items-center gap-6">
           <span className="font-bold text-sky-400">Admin Panel</span>
-
+          <Link
+            href="/"
+            className="text-sm text-zinc-400 hover:text-white transition"
+          >
+            Home
+          </Link>
           <Link
             href="/admin"
             className="text-sm text-zinc-400 hover:text-white transition"
@@ -84,10 +89,10 @@ export default function AdminLayout({
           </Link>
 
           <Link
-            href="/"
+            href="/admin/rag"
             className="text-sm text-zinc-400 hover:text-white transition"
           >
-            Home
+            RAG Inspector
           </Link>
         </div>
       </nav>
