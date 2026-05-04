@@ -2,6 +2,8 @@
 
 A full-stack e-commerce app for a Nordic home decor store with a custom-built RAG (Retrieval-Augmented Generation) recommendation engine — no external AI libraries, just pure TypeScript math.
 
+[DEMO](nordic-shop-git-main-annashitikova-9718s-projects.vercel.app)
+
 ## 🛠 Tech Stack
 
 <p>
@@ -163,7 +165,7 @@ stock_movements   id · product_id → · quantity · movement_type (in | out | 
 
 ---
 
-## 🚀 Getting Started
+<!-- ## 🚀 Getting Started
 
 ```bash
 git clone https://github.com/yourusername/ShopRAG
@@ -184,7 +186,7 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 ```bash
 npm run dev
 # → http://localhost:3000
-```
+``` -->
 
 ---
 
@@ -207,4 +209,3 @@ npm run dev
 - Cart with Redux persist
 - Order management in admin panel
 - Mobile-first design pass
-- Deployed live demo on Vercel
