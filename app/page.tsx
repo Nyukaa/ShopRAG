@@ -48,18 +48,22 @@ export default function Home() {
     );
   });
 
-  // Обнови существующий isSearching и displayItems
   const isSearching = query.trim().length > 0;
 
-  const displayItems = (() => {
-    if (!isSearching) return items;
-    if (searchMode === "simple") return simpleResults;
-    return ragResults ?? [];
-  })();
+  // const displayItems = (() => {
+  //   if (!isSearching) return items;
+  //   if (searchMode === "simple") return simpleResults;
+  //   return ragResults ?? [];
+  // })();
 
-  // Обнови filteredItems — добавь category поверх
   const filteredItems = (() => {
-    const base = displayItems;
+    const base = isSearching
+      ? searchMode === "rag"
+        ? ragResults ?? []
+        : simpleResults
+      : items;
+
+    // Apply category filter on top of search results
     if (activeCategory === "All") return base;
     return base.filter((p) => p.category?.name === activeCategory);
   })();
@@ -121,6 +125,7 @@ export default function Home() {
                 onClick={() => {
                   setSearchMode("simple");
                   setQuery("");
+                  setActiveCategory("All");
                 }}
                 className={`px-4 py-1.5 rounded-full text-xs font-medium transition ${
                   searchMode === "simple"
@@ -134,6 +139,7 @@ export default function Home() {
                 onClick={() => {
                   setSearchMode("rag");
                   setQuery("");
+                  setActiveCategory("All");
                 }}
                 className={`px-4 py-1.5 rounded-full text-xs font-medium transition ${
                   searchMode === "rag"
@@ -149,8 +155,8 @@ export default function Home() {
           {mounted && (
             <p className="text-center text-[11px] text-[#B0A090] mb-4 h-4">
               {searchMode === "simple"
-                ? "Exact keyword match — finds products containing your words"
-                : "Semantic search — understands meaning, not just keywords"}
+                ? "Exact keyword match - finds products containing your words"
+                : "Semantic search - understands meaning, not just keywords"}
             </p>
           )}
           {/* Input */}
@@ -210,7 +216,7 @@ export default function Home() {
               {searchMode === "rag" ? (
                 ragResults?.length ? (
                   <>
-                    Found <strong>{ragResults.length}</strong> semantically
+                    Found <strong>{ragResults.length} </strong> semantically
                     related results for &quot;<em>{query}</em>&quot;
                   </>
                 ) : (
@@ -218,7 +224,7 @@ export default function Home() {
                 )
               ) : simpleResults.length ? (
                 <>
-                  Found <strong>{simpleResults.length}</strong> products
+                  Found <strong>{simpleResults.length} </strong> products
                   matching &quot;<em>{query}</em>&quot;
                 </>
               ) : (
@@ -233,8 +239,9 @@ export default function Home() {
           <p className="mt-3 text-xs text-[#8C7E6E]">
             {ragResults?.length ? (
               <>
-                Showing <strong>{ragResults.length}</strong> results for &quot;
-                <em>{query}</em>&quot; — powered by RAG
+                Showing <strong> {ragResults.length} </strong> results for
+                &quot;
+                <em>{query}</em>&quot; - powered by RAG
               </>
             ) : (
               `No matches found for "${query}"`
@@ -279,24 +286,32 @@ export default function Home() {
           </div>
         )}
 
-        {/* Count / status line */}
-
+        {/* Count line */}
         <div className="flex items-center justify-between mb-6">
           <p className="text-xs text-[#8C7E6E] uppercase tracking-widest">
             {isSearching
               ? ragLoading
                 ? "Searching…"
                 : `${filteredItems.length} results`
-              : status === "succeeded"
-              ? `${filteredItems.length} products`
-              : ""}
+              : `${filteredItems.length} of ${items.length} products`}
           </p>
-          {isSearching && (
-            <div className="flex items-center gap-1.5 text-xs text-[#8C7E6E] bg-[#EDE8E0] dark:bg-zinc-800 px-3 py-1 rounded-full">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              RAG semantic search
-            </div>
-          )}
+          {/* show active filtr */}
+          <div className="flex items-center gap-2">
+            {activeCategory !== "All" && (
+              <button
+                onClick={() => setActiveCategory("All")}
+                className="text-xs text-[#8C7E6E] bg-[#EDE8E0] dark:bg-zinc-800 px-3 py-1 rounded-full flex items-center gap-1"
+              >
+                {activeCategory} ✕
+              </button>
+            )}
+            {isSearching && (
+              <div className="flex items-center gap-1.5 text-xs text-[#8C7E6E] bg-[#EDE8E0] dark:bg-zinc-800 px-3 py-1 rounded-full">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                {searchMode === "rag" ? "RAG semantic" : "Simple match"}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Loading skeleton */}
