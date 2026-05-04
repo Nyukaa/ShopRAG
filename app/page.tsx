@@ -50,12 +50,6 @@ export default function Home() {
 
   const isSearching = query.trim().length > 0;
 
-  // const displayItems = (() => {
-  //   if (!isSearching) return items;
-  //   if (searchMode === "simple") return simpleResults;
-  //   return ragResults ?? [];
-  // })();
-
   const filteredItems = (() => {
     const base = isSearching
       ? searchMode === "rag"
@@ -94,13 +88,6 @@ export default function Home() {
     runSearch(debouncedQuery);
   }, [debouncedQuery, runSearch]);
 
-  //const isSearching = query.trim().length > 0;
-  //const displayItems = isSearching ? ragResults ?? [] : items;
-  // const filteredItems = (() => {
-  //   const base = isSearching ? ragResults ?? [] : items;
-  //   if (activeCategory === "All") return base;
-  //   return base.filter((p) => p.category?.name === activeCategory);
-  // })();
   return (
     <main className="flex-1 bg-[#F7F4F0] dark:bg-zinc-950 min-h-screen">
       {/* ── Hero ─────────────────────────────────────────────── */}
