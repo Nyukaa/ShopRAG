@@ -29,7 +29,40 @@ export default function Home() {
   const [ragLoading, setRagLoading] = useState(false);
   const debouncedQuery = useDebounce(query, 350); // Debounce user input for better UX and fewer API calls
   const [activeCategory, setActiveCategory] = useState<string>("All");
+  const [searchMode, setSearchMode] = useState<"simple" | "rag">("simple");
+  const [mounted, setMounted] = useState(false);
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Simple search — фильтрует локально по name + description (без API)
+  const simpleResults = items.filter((p) => {
+    if (!query.trim()) return true;
+    const q = query.toLowerCase();
+    return (
+      p.name.toLowerCase().includes(q) ||
+      p.description?.toLowerCase().includes(q) ||
+      p.supplier?.toLowerCase().includes(q) ||
+      p.category?.name?.toLowerCase().includes(q)
+    );
+  });
+
+  // Обнови существующий isSearching и displayItems
+  const isSearching = query.trim().length > 0;
+
+  const displayItems = (() => {
+    if (!isSearching) return items;
+    if (searchMode === "simple") return simpleResults;
+    return ragResults ?? [];
+  })();
+
+  // Обнови filteredItems — добавь category поверх
+  const filteredItems = (() => {
+    const base = displayItems;
+    if (activeCategory === "All") return base;
+    return base.filter((p) => p.category?.name === activeCategory);
+  })();
   // Load all products on mount
   useEffect(() => {
     if (status === "idle") dispatch(fetchProducts());
@@ -57,13 +90,13 @@ export default function Home() {
     runSearch(debouncedQuery);
   }, [debouncedQuery, runSearch]);
 
-  const isSearching = query.trim().length > 0;
+  //const isSearching = query.trim().length > 0;
   //const displayItems = isSearching ? ragResults ?? [] : items;
-  const filteredItems = (() => {
-    const base = isSearching ? ragResults ?? [] : items;
-    if (activeCategory === "All") return base;
-    return base.filter((p) => p.category?.name === activeCategory);
-  })();
+  // const filteredItems = (() => {
+  //   const base = isSearching ? ragResults ?? [] : items;
+  //   if (activeCategory === "All") return base;
+  //   return base.filter((p) => p.category?.name === activeCategory);
+  // })();
   return (
     <main className="flex-1 bg-[#F7F4F0] dark:bg-zinc-950 min-h-screen">
       {/* ── Hero ─────────────────────────────────────────────── */}
@@ -79,53 +112,119 @@ export default function Home() {
           and more.
         </p>
 
-        {/* Search bar */}
-        <div className="relative max-w-lg mx-auto">
-          <input
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder='Try "cozy bedroom" or "gift idea" or "natural materials"'
-            className="w-full bg-white dark:bg-zinc-800 border border-[#D4C9BC] dark:border-zinc-700 rounded-full px-5 py-3 pr-12 text-sm text-[#2C2416] dark:text-zinc-100 placeholder:text-[#B0A090] focus:outline-none focus:border-[#8C7E6E] shadow-sm transition"
-          />
-          {/* Icon */}
-          <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[#B0A090]">
-            {ragLoading ? (
-              <svg
-                className="animate-spin"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
+        {/* Search bar 2 types */}
+        <div className="max-w-xl mx-auto">
+          {/* Mode toggle */}
+          {mounted && (
+            <div className="flex rounded-full border border-[#D4C9BC] dark:border-zinc-700 bg-white dark:bg-zinc-800 p-1 mb-3 w-fit mx-auto">
+              <button
+                onClick={() => {
+                  setSearchMode("simple");
+                  setQuery("");
+                }}
+                className={`px-4 py-1.5 rounded-full text-xs font-medium transition ${
+                  searchMode === "simple"
+                    ? "bg-[#2C2416] text-white dark:bg-zinc-100 dark:text-zinc-900"
+                    : "text-[#8C7E6E] hover:text-[#2C2416]"
+                }`}
               >
-                <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" opacity=".25" />
-                <path d="M21 12a9 9 0 00-9-9" />
-              </svg>
-            ) : (
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
+                Simple Search
+              </button>
+              <button
+                onClick={() => {
+                  setSearchMode("rag");
+                  setQuery("");
+                }}
+                className={`px-4 py-1.5 rounded-full text-xs font-medium transition ${
+                  searchMode === "rag"
+                    ? "bg-[#2C2416] text-white dark:bg-zinc-100 dark:text-zinc-900"
+                    : "text-[#8C7E6E] hover:text-[#2C2416]"
+                }`}
               >
-                <circle cx="11" cy="11" r="8" />
-                <path d="M21 21l-4.35-4.35" />
-              </svg>
+                ✦ RAG Search
+              </button>
+            </div>
+          )}
+          {/* Mode description */}
+          {mounted && (
+            <p className="text-center text-[11px] text-[#B0A090] mb-4 h-4">
+              {searchMode === "simple"
+                ? "Exact keyword match — finds products containing your words"
+                : "Semantic search — understands meaning, not just keywords"}
+            </p>
+          )}
+          {/* Input */}
+          <div className="relative">
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={
+                searchMode === "simple"
+                  ? "e.g. lamp, candle, mirror..."
+                  : 'Try "cozy bedroom" or "gift idea" or "natural materials"'
+              }
+              className="w-full bg-white dark:bg-zinc-800 border border-[#D4C9BC] dark:border-zinc-700 rounded-full px-5 py-3 pr-12 text-sm text-[#2C2416] dark:text-zinc-100 placeholder:text-[#B0A090] focus:outline-none focus:border-[#8C7E6E] shadow-sm transition"
+            />
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[#B0A090]">
+              {ragLoading ? (
+                <svg
+                  className="animate-spin"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" opacity=".25" />
+                  <path d="M21 12a9 9 0 00-9-9" />
+                </svg>
+              ) : (
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <circle cx="11" cy="11" r="8" />
+                  <path d="M21 21l-4.35-4.35" />
+                </svg>
+              )}
+            </div>
+            {query && (
+              <button
+                onClick={() => setQuery("")}
+                className="absolute right-10 top-1/2 -translate-y-1/2 text-[#B0A090] hover:text-[#8C7E6E] transition"
+              >
+                ✕
+              </button>
             )}
           </div>
 
-          {/* Clear button */}
-          {query && (
-            <button
-              onClick={() => setQuery("")}
-              className="absolute right-10 top-1/2 -translate-y-1/2 text-[#B0A090] hover:text-[#8C7E6E] transition"
-            >
-              ✕
-            </button>
+          {/* Result hint */}
+          {isSearching && !ragLoading && (
+            <p className="mt-3 text-xs text-[#8C7E6E] text-center">
+              {searchMode === "rag" ? (
+                ragResults?.length ? (
+                  <>
+                    Found <strong>{ragResults.length}</strong> semantically
+                    related results for &quot;<em>{query}</em>&quot;
+                  </>
+                ) : (
+                  `No semantic matches for "${query}"`
+                )
+              ) : simpleResults.length ? (
+                <>
+                  Found <strong>{simpleResults.length}</strong> products
+                  matching &quot;<em>{query}</em>&quot;
+                </>
+              ) : (
+                `No products containing "${query}"`
+              )}
+            </p>
           )}
         </div>
 
