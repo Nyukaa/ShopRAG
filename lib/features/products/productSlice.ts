@@ -13,6 +13,7 @@ export type Product = {
   // with Number(price) at the render site.
   price: string;
   category_id: string;
+  category: { id: string; name: string } | null;
   image_url: string | null;
   status: "active" | "archived";
   stock_quantity: number;

@@ -27,7 +27,8 @@ export default function Home() {
   const [query, setQuery] = useState("");
   const [ragResults, setRagResults] = useState<Product[] | null>(null);
   const [ragLoading, setRagLoading] = useState(false);
-  const debouncedQuery = useDebounce(query, 350);
+  const debouncedQuery = useDebounce(query, 350); // Debounce user input for better UX and fewer API calls
+  const [activeCategory, setActiveCategory] = useState<string>("All");
 
   // Load all products on mount
   useEffect(() => {
@@ -57,8 +58,12 @@ export default function Home() {
   }, [debouncedQuery, runSearch]);
 
   const isSearching = query.trim().length > 0;
-  const displayItems = isSearching ? ragResults ?? [] : items;
-
+  //const displayItems = isSearching ? ragResults ?? [] : items;
+  const filteredItems = (() => {
+    const base = isSearching ? ragResults ?? [] : items;
+    if (activeCategory === "All") return base;
+    return base.filter((p) => p.category?.name === activeCategory);
+  })();
   return (
     <main className="flex-1 bg-[#F7F4F0] dark:bg-zinc-950 min-h-screen">
       {/* ── Hero ─────────────────────────────────────────────── */}
@@ -129,8 +134,8 @@ export default function Home() {
           <p className="mt-3 text-xs text-[#8C7E6E]">
             {ragResults?.length ? (
               <>
-                Showing <strong>{ragResults.length}</strong> results for "
-                <em>{query}</em>" — powered by RAG
+                Showing <strong>{ragResults.length}</strong> results for &quot;
+                <em>{query}</em>&quot; — powered by RAG
               </>
             ) : (
               `No matches found for "${query}"`
@@ -141,7 +146,7 @@ export default function Home() {
 
       {/* ── Product grid ─────────────────────────────────────── */}
       <section className="max-w-6xl mx-auto px-6 py-12">
-        {/* Category pills — only show when not searching */}
+        {/* Category pills */}
         {!isSearching && status === "succeeded" && (
           <div className="flex gap-2 flex-wrap mb-8">
             {[
@@ -155,23 +160,36 @@ export default function Home() {
             ].map((cat) => (
               <button
                 key={cat}
-                className="px-4 py-1.5 rounded-full text-xs border border-[#D4C9BC] dark:border-zinc-700 text-[#8C7E6E] hover:bg-[#EDE8E0] dark:hover:bg-zinc-800 transition"
+                onClick={() => setActiveCategory(cat)}
+                className={`px-4 py-1.5 rounded-full text-xs border transition
+          ${
+            activeCategory === cat
+              ? "bg-[#2C2416] text-white border-[#2C2416] dark:bg-zinc-100 dark:text-zinc-900 dark:border-zinc-100"
+              : "border-[#D4C9BC] dark:border-zinc-700 text-[#8C7E6E] hover:bg-[#EDE8E0] dark:hover:bg-zinc-800"
+          }`}
               >
                 {cat}
+                {/* Count badge */}
+                {cat !== "All" && status === "succeeded" && (
+                  <span className="ml-1.5 opacity-60">
+                    {items.filter((p) => p.category?.name === cat).length}
+                  </span>
+                )}
               </button>
             ))}
           </div>
         )}
 
         {/* Count / status line */}
+
         <div className="flex items-center justify-between mb-6">
           <p className="text-xs text-[#8C7E6E] uppercase tracking-widest">
             {isSearching
               ? ragLoading
                 ? "Searching…"
-                : `${ragResults?.length ?? 0} results`
+                : `${filteredItems.length} results`
               : status === "succeeded"
-              ? `${items.length} products`
+              ? `${filteredItems.length} products`
               : ""}
           </p>
           {isSearching && (
@@ -194,7 +212,7 @@ export default function Home() {
           <div className="text-center py-20">
             <p className="text-3xl mb-3">🌿</p>
             <p className="text-[#8C7E6E] text-sm">
-              No products matched "<em>{query}</em>"
+              No products matched &quot;<em>{query}</em>&quot;
             </p>
             <button
               onClick={() => setQuery("")}
@@ -205,10 +223,10 @@ export default function Home() {
           </div>
         )}
 
-        {/* Grid */}
-        {!ragLoading && displayItems.length > 0 && (
+        {/* Grid — using filteredItems  */}
+        {!ragLoading && filteredItems.length > 0 && (
           <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {displayItems.map((product) => (
+            {filteredItems.map((product) => (
               <ProductCard
                 key={product.id}
                 product={product}
@@ -218,6 +236,18 @@ export default function Home() {
             ))}
           </ul>
         )}
+        {/* Empty state for filter */}
+        {!ragLoading &&
+          filteredItems.length === 0 &&
+          status === "succeeded" &&
+          !isSearching && (
+            <div className="text-center py-20">
+              <p className="text-3xl mb-3">🌿</p>
+              <p className="text-[#8C7E6E] text-sm">
+                No products in {activeCategory} yet
+              </p>
+            </div>
+          )}
       </section>
     </main>
   );

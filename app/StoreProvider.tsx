@@ -11,9 +11,9 @@ export default function StoreProvider({
 }) {
   const storeRef = useRef<AppStore | null>(null);
 
-  if (!storeRef.current) {
+  if (storeRef.current == null) {
     storeRef.current = makeStore();
   }
-
+  // eslint-disable-next-line react-hooks/refs
   return <Provider store={storeRef.current}>{children}</Provider>;
 }
