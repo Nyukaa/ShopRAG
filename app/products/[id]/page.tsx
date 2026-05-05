@@ -69,9 +69,16 @@ export default function ProductPage() {
             <div className="flex flex-wrap gap-2 mb-6">
               {/* Category badge */}
               {current.category && (
-                <span className="inline-block text-xs px-3 py-1 rounded-full bg-[#EDE8E0] text-[#8C7E6E] mb-4">
-                  {current.category.name}
-                </span>
+                <button
+                  onClick={() =>
+                    router.push(
+                      `/?category=${encodeURIComponent(current.category!.name)}`
+                    )
+                  }
+                  className="inline-block text-xs px-3 py-1 rounded-full bg-[#EDE8E0] hover:bg-[#D4C9BC] text-[#8C7E6E] mb-4 transition cursor-pointer"
+                >
+                  ← {current.category.name}
+                </button>
               )}
 
               <p className="text-[#8C7E6E] text-sm leading-relaxed mb-6">

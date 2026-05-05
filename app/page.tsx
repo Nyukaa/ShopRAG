@@ -1,6 +1,8 @@
 // app/page.tsx
 "use client";
-
+import { ProductCard } from "@/app/components/ProductCard";
+import { ProductGridSkeleton } from "@/app/components/ProductGridSkeleton";
+import { Suspense } from "react"; //
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
@@ -8,6 +10,7 @@ import {
   fetchProducts,
   type Product,
 } from "@/lib/features/products/productSlice";
+import { useSearchParams } from "next/navigation";
 
 // ── Debounce hook ──────────────────────────────────────────────
 function useDebounce<T>(value: T, delay: number): T {
@@ -19,16 +22,19 @@ function useDebounce<T>(value: T, delay: number): T {
   return debounced;
 }
 
-export default function Home() {
+function Home() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { items, status, error } = useAppSelector((s) => s.products);
-
+  const searchParams = useSearchParams();
   const [query, setQuery] = useState("");
   const [ragResults, setRagResults] = useState<Product[] | null>(null);
   const [ragLoading, setRagLoading] = useState(false);
   const debouncedQuery = useDebounce(query, 350); // Debounce user input for better UX and fewer API calls
-  const [activeCategory, setActiveCategory] = useState<string>("All");
+  //const [activeCategory, setActiveCategory] = useState<string>("All");
+  const [activeCategory, setActiveCategory] = useState<string>(
+    searchParams.get("category") ?? "All"
+  );
   const [searchMode, setSearchMode] = useState<"simple" | "rag">("simple");
   const [mounted, setMounted] = useState(false);
 
@@ -36,7 +42,7 @@ export default function Home() {
     setMounted(true);
   }, []);
 
-  // Simple search — фильтрует локально по name + description (без API)
+  // Simple search — filtr locally name + description (без API)
   const simpleResults = items.filter((p) => {
     if (!query.trim()) return true;
     const q = query.toLowerCase();
@@ -354,97 +360,10 @@ export default function Home() {
   );
 }
 
-// ── Product Card ───────────────────────────────────────────────
-function ProductCard({
-  product,
-  onClick,
-  highlight,
-}: {
-  product: Product;
-  onClick: () => void;
-  highlight?: boolean;
-}) {
+export default function Page() {
   return (
-    <li
-      onClick={onClick}
-      className={`cursor-pointer group overflow-hidden rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300
-        ${
-          highlight
-            ? "shadow-md border border-[#C8B9A8]"
-            : "border border-[#E8E0D8] dark:border-zinc-800 hover:shadow-lg hover:border-[#C8B9A8]"
-        }`}
-    >
-      {/* Image */}
-      <div className="h-52 w-full bg-[#F0EBE3] dark:bg-zinc-800 overflow-hidden">
-        {product.image_url ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={product.image_url}
-            alt={product.name}
-            className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
-          />
-        ) : (
-          <div className="h-full w-full flex items-center justify-center text-[#C8B9A8] text-xs">
-            No image
-          </div>
-        )}
-      </div>
-
-      {/* Content */}
-      <div className="p-5">
-        <p className="text-[10px] uppercase tracking-widest text-[#B0A090] mb-1">
-          {product.supplier}
-        </p>
-        <h3 className="font-medium text-[#2C2416] dark:text-zinc-100 text-sm mb-2 leading-snug">
-          {product.name}
-        </h3>
-
-        {product.description && (
-          <p className="text-xs text-[#8C7E6E] line-clamp-2 mb-4 leading-relaxed">
-            {product.description}
-          </p>
-        )}
-
-        <div className="flex items-center justify-between">
-          <span className="text-base font-semibold text-[#2C2416] dark:text-zinc-100">
-            €{Number(product.price).toFixed(2)}
-          </span>
-          <span
-            className={`text-[10px] ${
-              product.stock_quantity <= product.reorder_threshold
-                ? "text-red-400"
-                : "text-[#B0A090]"
-            }`}
-          >
-            {product.stock_quantity <= product.reorder_threshold
-              ? `⚠ Low stock`
-              : `In stock`}
-          </span>
-        </div>
-      </div>
-    </li>
-  );
-}
-
-// ── Skeleton ───────────────────────────────────────────────────
-function ProductGridSkeleton() {
-  return (
-    <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {Array.from({ length: 6 }).map((_, i) => (
-        <li
-          key={i}
-          className="rounded-2xl border border-[#E8E0D8] overflow-hidden bg-white dark:bg-zinc-900"
-        >
-          <div className="h-52 bg-[#F0EBE3] dark:bg-zinc-800 animate-pulse" />
-          <div className="p-5 space-y-3">
-            <div className="h-2.5 w-16 bg-[#E8E0D8] dark:bg-zinc-700 rounded animate-pulse" />
-            <div className="h-4 w-3/4 bg-[#E8E0D8] dark:bg-zinc-700 rounded animate-pulse" />
-            <div className="h-3 w-full bg-[#E8E0D8] dark:bg-zinc-700 rounded animate-pulse" />
-            <div className="h-3 w-2/3 bg-[#E8E0D8] dark:bg-zinc-700 rounded animate-pulse" />
-            <div className="h-5 w-16 bg-[#E8E0D8] dark:bg-zinc-700 rounded animate-pulse" />
-          </div>
-        </li>
-      ))}
-    </ul>
+    <Suspense fallback={null}>
+      <Home />
+    </Suspense>
   );
 }
