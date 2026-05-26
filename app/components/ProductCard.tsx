@@ -2,6 +2,8 @@
 "use client";
 
 import { type Product } from "@/lib/features/products/productSlice";
+import { useAppDispatch } from "@/lib/hooks";
+import { itemAdded } from "@/lib/features/cart/cartSlice";
 
 export function ProductCard({
   product,
@@ -12,6 +14,7 @@ export function ProductCard({
   onClick: () => void;
   highlight?: boolean;
 }) {
+  const dispatch = useAppDispatch();
   return (
     <li
       onClick={onClick}
@@ -64,6 +67,15 @@ export function ProductCard({
               : "In stock"}
           </span>
         </div>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            dispatch(itemAdded(product.id));
+          }}
+          className="w-full rounded-xl bg-[#2C2416] text-white text-xs py-2 tracking-widest uppercase hover:bg-[#4a3e2e] transition"
+        >
+          Add to cart
+        </button>
       </div>
     </li>
   );
