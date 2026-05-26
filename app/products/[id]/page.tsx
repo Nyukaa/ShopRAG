@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { itemAdded } from "@/lib/features/cart/cartSlice";
 import {
   fetchProductById,
   fetchSimilar,
@@ -110,7 +111,10 @@ export default function ProductPage() {
             <p className="text-4xl font-light text-[#2C2416] dark:text-zinc-100 mb-6">
               €{Number(current.price).toFixed(2)}
             </p>
-            <button className="w-full bg-[#2C2416] hover:bg-[#3d3020] text-white font-medium py-3 rounded-xl transition text-sm">
+            <button
+              onClick={() => dispatch(itemAdded(current.id))} // ← добавить
+              className="w-full bg-[#2C2416] hover:bg-[#3d3020] text-white font-medium py-3 rounded-xl transition text-sm"
+            >
               Add to Cart
             </button>
           </div>
