@@ -2,7 +2,10 @@
 
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import { fetchProducts, type Product } from "@/lib/features/products/productSlice";
+import {
+  fetchProducts,
+  type Product,
+} from "@/lib/features/products/productSlice";
 import { selectCartItems, itemRemoved } from "@/lib/features/cart/cartSlice";
 
 export default function CartPage() {
@@ -38,9 +41,9 @@ export default function CartPage() {
   }
 
   return (
-    <main className="flex-1 p-8">
-      <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl font-light text-[#2C2416] mb-6 tracking-tight">
+    <main className="flex-1 p-8 flex justify-center">
+      <div className="max-w-2xl mx-auto w-full">
+        <h1 className="text-3xl font-light text-[#2C2416] mb-6 tracking-tight text-center">
           Your Cart
         </h1>
 
@@ -55,7 +58,9 @@ export default function CartPage() {
               className="flex items-center justify-between py-4"
             >
               <div>
-                <p className="font-medium text-[#2C2416] text-sm">{product.name}</p>
+                <p className="font-medium text-[#2C2416] text-sm">
+                  {product.name}
+                </p>
                 <p className="text-xs text-[#8C7E6E] mt-1">
                   €{Number(product.price).toFixed(2)} × {quantity}
                 </p>
