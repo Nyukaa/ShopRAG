@@ -2,7 +2,7 @@
 
 A full-stack e-commerce app for a Nordic home decor store with a custom-built RAG (Retrieval-Augmented Generation) recommendation engine — no external AI libraries, just pure TypeScript math.
 
-[DEMO](nordic-shop-git-main-annashitikova-9718s-projects.vercel.app)
+[DEMO](https://nordic-shop-ebon.vercel.app/)
 
 ## 🛠 Tech Stack
 
