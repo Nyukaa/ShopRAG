@@ -50,6 +50,12 @@ A full-stack e-commerce app for a Nordic home decor store with a custom-built RA
 
 ---
 
+## 📸 Screenshots / App Preview / [🌐 Live Demo](https://nordic-shop-ebon.vercel.app/)
+
+| Main Page                                                                           | Product Details                                                             | Admin Dashboard                                                          | New Product                                                                     | Shopping Cart                                                         |
+| ----------------------------------------------------------------------------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| <img src="./screen/nordic_main.png" alt="Main Page - Product Catalog" width="150"/> | <img src="./screen/nordic_one.png" alt="Product Details Page" width="150"/> | <img src="./screen/nordic_admin.png" alt="Admin Dashboard" width="150"/> | <img src="./screen/nordic_new_product.png" alt="New Product Form" width="150"/> | <img src="./screen/Nordic_cart.png" alt="Shopping Cart" width="150"/> |
+
 ## 🧠 RAG Architecture
 
 The recommendation engine runs entirely in Node.js — no OpenAI, no external ML libraries.
