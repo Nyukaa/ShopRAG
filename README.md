@@ -12,6 +12,7 @@ A full-stack e-commerce app for a Nordic home decor store with a custom-built RA
   <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" />
   <img src="https://img.shields.io/badge/TailwindCSS_4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" />
   <img src="https://img.shields.io/badge/Redux_Toolkit-764ABC?style=for-the-badge&logo=redux&logoColor=white" />
+  <img src="https://img.shields.io/badge/Stripe-635BFF?style=for-the-badge&logo=stripe&logoColor=white" />
 </p>
 
 <p>
@@ -34,6 +35,7 @@ A full-stack e-commerce app for a Nordic home decor store with a custom-built RA
 - **Auth**: Google OAuth via Supabase — role-based (`admin`, `manager`, `staff`)
 - **Storage**: Supabase Storage buckets for product images
 - **RAG Engine**: Custom TF-IDF vectorizer + cosine similarity — zero dependencies
+- **Payments**: Stripe Checkout — hosted payment flow, webhook-based order confirmation
 
 ---
 
@@ -46,6 +48,7 @@ A full-stack e-commerce app for a Nordic home decor store with a custom-built RA
 - 🛡 **Role-based admin panel** — `admin` and `manager` can create/edit products; only `admin` can delete
 - 🖼 **Image upload** — drag-and-drop to Supabase Storage, public URL auto-filled in form
 - 📊 **RAG Inspector** — live visualization of vocabulary, vector heatmap, similarity matrix
+- 💳 **Stripe Checkout** — secure payment flow with real Stripe integration, order confirmation on success
 - 🌙 **Dark mode** — full dark/light support with Nordic warm palette
 
 ---
@@ -205,12 +208,12 @@ npm run dev
 - **Role-based access control** — three-tier permission system
 - **Algorithm transparency** — RAG Inspector shows exactly why results rank as they do
 - **Modular architecture** — `rag-engine.ts` is replaceable with OpenAI embeddings in one function swap
+- **Payment integration** — real Stripe Checkout flow with server-side session creation and webhook handling
 
 ---
 
 ## 🔭 Future Enhancements
 
-- Stripe checkout integration
 - OpenAI `text-embedding-3-small` to replace TF-IDF vectors
 - Cart with Redux persist
 - Order management in admin panel
