@@ -35,7 +35,7 @@ A full-stack e-commerce app for a Nordic home decor store with a custom-built RA
 - **Auth**: Google OAuth via Supabase — role-based (`admin`, `manager`, `staff`)
 - **Storage**: Supabase Storage buckets for product images
 - **RAG Engine**: Custom TF-IDF vectorizer + cosine similarity — zero dependencies
-- **Payments**: Stripe Checkout — hosted payment flow, webhook-based order confirmation
+- **Payments**: Stripe Checkout — hosted payment flow.
 
 ---
 
@@ -208,7 +208,7 @@ npm run dev
 - **Role-based access control** — three-tier permission system
 - **Algorithm transparency** — RAG Inspector shows exactly why results rank as they do
 - **Modular architecture** — `rag-engine.ts` is replaceable with OpenAI embeddings in one function swap
-- **Payment integration** — real Stripe Checkout flow with server-side session creation and webhook handling
+- **Payment integration** — real Stripe Checkout flow
 
 ---
 
