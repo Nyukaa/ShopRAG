@@ -215,6 +215,5 @@ npm run dev
 ## 🔭 Future Enhancements
 
 - OpenAI `text-embedding-3-small` to replace TF-IDF vectors
-- Cart with Redux persist
 - Order management in admin panel
 - Mobile-first design pass
