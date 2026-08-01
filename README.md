@@ -49,7 +49,6 @@ A full-stack e-commerce app for a Nordic home decor store with a custom-built RA
 - 🖼 **Image upload** — drag-and-drop to Supabase Storage, public URL auto-filled in form
 - 📊 **RAG Inspector** — live visualization of vocabulary, vector heatmap, similarity matrix
 - 💳 **Stripe Checkout** — secure payment flow with real Stripe integration, order confirmation on success
-- 🌙 **Dark mode** — full dark/light support with Nordic warm palette
 
 ---
 
