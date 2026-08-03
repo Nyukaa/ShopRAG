@@ -1,0 +1,54 @@
+# azure-pipelines.yml
+# Запускается на self-hosted агенте (пул "Default" — переименуйте под свой пул, если он называется иначе)
+
+trigger:
+  branches:
+    include:
+      - main
+      - develop
+
+pr:
+  branches:
+    include:
+      - main
+      - develop
+
+pool: "Default" # the name of your self-hosted agent pool
+
+variables:
+  NODE_VERSION: "20.x"
+
+stages:
+  - stage: Test
+    displayName: "Unit tests"
+    jobs:
+      - job: Jest
+        displayName: "Run Jest tests"
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: $(NODE_VERSION)
+            displayName: "Install Node.js"
+
+          - script: |
+              npm ci
+            displayName: "Install dependencies"
+
+          - script: |
+              npx jest --ci --coverage
+            displayName: "Run tests"
+
+          - task: PublishTestResults@2
+            condition: succeededOrFailed() # Publish test results even if tests fail
+            inputs:
+              testResultsFormat: "JUnit"
+              testResultsFiles: "test-results/junit.xml"
+              failTaskOnFailedTests: true
+              testRunTitle: "Jest unit tests"
+            displayName: "Publish test results"
+
+          - task: PublishCodeCoverageResults@2
+            condition: succeededOrFailed()
+            inputs:
+              summaryFileLocation: "coverage/cobertura-coverage.xml"
+            displayName: "Publish code coverage"
