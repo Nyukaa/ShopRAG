@@ -52,22 +52,21 @@ stages:
   # Deploy
   # ===========================
   - stage: Deploy
+    displayName: Deploy
     dependsOn: Build
 
     jobs:
-      - deployment: DeployWeb
-        environment: Production
+      - job: DeployWeb
+        displayName: Deploy to Azure
 
-        strategy:
-          runOnce:
-            deploy:
-              steps:
-                - download: current
-                  artifact: drop
+        steps:
+          - download: current
+            artifact: drop
 
-                - task: AzureWebApp@1
-                  inputs:
-                    azureSubscription: "ShopRag-ServiceConnection"
-                    appType: webAppLinux
-                    appName: "shoprag-app"
-                    package: "$(Pipeline.Workspace)/drop/app.zip"
+          - task: AzureWebApp@1
+            displayName: Deploy to Azure App Service
+            inputs:
+              azureSubscription: "ShopRag-ServiceConnection"
+              appType: webAppLinux
+              appName: "shoprag-app"
+              package: "$(Pipeline.Workspace)/drop/app.zip"
