@@ -1,54 +1,73 @@
-# azure-pipelines.yml
-# Запускается на self-hosted агенте (пул "Default" — переименуйте под свой пул, если он называется иначе)
-
 trigger:
   branches:
     include:
       - main
-      - develop
 
 pr:
   branches:
     include:
       - main
-      - develop
 
-pool: "Default" # the name of your self-hosted agent pool
+pool: Default
 
 variables:
   NODE_VERSION: "20.x"
 
 stages:
-  - stage: Test
-    displayName: "Unit tests"
+  # ===========================
+  # Build
+  # ===========================
+  - stage: Build
+    displayName: Build & Test
+
     jobs:
-      - job: Jest
-        displayName: "Run Jest tests"
+      - job: Build
         steps:
-          - task: NodeTool@0
+          - task: UseNode@1
             inputs:
-              versionSpec: $(NODE_VERSION)
-            displayName: "Install Node.js"
+              version: $(NODE_VERSION)
+            displayName: Install Node.js
 
-          - script: |
-              npm ci
-            displayName: "Install dependencies"
+          - script: npm ci
+            displayName: Install dependencies
 
-          - script: |
-              npx jest --ci --coverage
-            displayName: "Run tests"
+          - script: npm test
+            displayName: Run Jest tests
 
-          - task: PublishTestResults@2
-            condition: succeededOrFailed() # Publish test results even if tests fail
+          - script: npm run build
+            displayName: Build Next.js
+
+          - task: ArchiveFiles@2
             inputs:
-              testResultsFormat: "JUnit"
-              testResultsFiles: "test-results/junit.xml"
-              failTaskOnFailedTests: true
-              testRunTitle: "Jest unit tests"
-            displayName: "Publish test results"
+              rootFolderOrFile: "$(System.DefaultWorkingDirectory)"
+              includeRootFolder: false
+              archiveType: zip
+              archiveFile: "$(Build.ArtifactStagingDirectory)/app.zip"
+              replaceExistingArchive: true
 
-          - task: PublishCodeCoverageResults@2
-            condition: succeededOrFailed()
-            inputs:
-              summaryFileLocation: "coverage/cobertura-coverage.xml"
-            displayName: "Publish code coverage"
+          - publish: "$(Build.ArtifactStagingDirectory)/app.zip"
+            artifact: drop
+
+  # ===========================
+  # Deploy
+  # ===========================
+  - stage: Deploy
+    dependsOn: Build
+
+    jobs:
+      - deployment: DeployWeb
+        environment: Production
+
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - download: current
+                  artifact: drop
+
+                - task: AzureWebApp@1
+                  inputs:
+                    azureSubscription: "ShopRag-ServiceConnection"
+                    appType: webAppLinux
+                    appName: "shoprag-app"
+                    package: "$(Pipeline.Workspace)/drop/app.zip"
