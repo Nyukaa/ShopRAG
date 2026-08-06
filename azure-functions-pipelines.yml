@@ -1,0 +1,50 @@
+# azure-functions-pipelines.yml
+# Деплой Azure Function App, срабатывает только при изменениях в /azure-functions
+
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - azure-functions/*
+
+pool: "Default" # ваш self-hosted pool
+
+variables:
+  functionAppName: "shoprag-review-email" # замените на реальное имя вашего Function App
+  workingDirectory: "azure-functions"
+  NODE_VERSION: "20.x"
+
+stages:
+  - stage: BuildAndDeploy
+    jobs:
+      - job: DeployFunction
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: $(NODE_VERSION)
+            displayName: "Install Node.js"
+
+          - script: |
+              npm install
+            workingDirectory: $(workingDirectory)
+            displayName: "Install dependencies"
+
+          - task: ArchiveFiles@2
+            inputs:
+              rootFolderOrFile: "$(workingDirectory)"
+              includeRootFolder: false
+              archiveType: "zip"
+              archiveFile: "$(Build.ArtifactStagingDirectory)/functions.zip"
+              replaceExistingArchive: true
+            displayName: "Zip function app"
+
+          - task: AzureFunctionApp@2
+            inputs:
+              azureSubscription: "<ваше-service-connection-имя>" # создать в Project Settings → Service connections
+              appType: "functionAppLinux"
+              appName: "$(functionAppName)"
+              package: "$(Build.ArtifactStagingDirectory)/functions.zip"
+              runtimeStack: "NODE|20"
+            displayName: "Deploy to Azure Function App"

@@ -48,3 +48,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+azure-functions/local.settings.json
+azure-functions/node_modules/
