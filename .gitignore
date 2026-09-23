@@ -44,6 +44,11 @@ yarn-error.log*
 
 # vercel
 .vercel
+# Python (Nordic Shop Agent)
+nordic-shop-agent/.venv/
+nordic-shop-agent/__pycache__/
+nordic-shop-agent/*.pyc
+nordic-shop-agent/.env
 
 # typescript
 *.tsbuildinfo
