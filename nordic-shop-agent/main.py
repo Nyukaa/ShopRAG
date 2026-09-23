@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-#from claude_client import handle_chat
-from tools import search_products
+from claude_client import handle_chat
+#from tools import search_products
 app = FastAPI()
 
 class ChatRequest(BaseModel):
@@ -9,9 +9,11 @@ class ChatRequest(BaseModel):
 
 @app.post("/chat")
 async def chat(req: ChatRequest):
-    #reply = await handle_chat(req.message)
+     # This now routes the message straight into Claude's full autonomous tool loop!
+
+    reply = await handle_chat(req.message)
     # Прямой тест: вместо Claude сразу передаем сообщение пользователя в ваш RAG-поиск
-    print(f"[FastAPI] Testing direct search for query: {req.message}")
-    reply = await search_products(req.message)
+    #print(f"[FastAPI] Testing direct search for query: {req.message}")
+    #reply = await search_products(req.message)
     return {"reply": reply}
    
