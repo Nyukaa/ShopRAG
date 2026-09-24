@@ -16,6 +16,14 @@ async def recommend_products(product_id: str):
         r = await client.get(f"{NORDIC_API_URL}/api/similar/{product_id}")
         return r.json()
 
+async def check_availability(product_id: str):
+    product = await get_product(product_id)
+    # Using .get() prevents KeyError if Next.js hasn't populated this field yet
+    stock = product.get("stock_quantity", 0) 
+    return {
+        "in_stock": stock > 0,
+        "quantity": stock
+    }
 TOOLS_SCHEMA = [
     {
         "name": "search_products",
@@ -43,6 +51,15 @@ TOOLS_SCHEMA = [
             "properties": {"product_id": {"type": "string"}},
             "required": ["product_id"]
         }
+    },
+    {
+        "name": "check_availability",
+        "description": "Check if a product is in stock and its quantity",
+        "input_schema": {
+            "type": "object",
+            "properties": {"product_id": {"type": "string"}},
+            "required": ["product_id"]
+        }
     }
 ]
 import asyncio
@@ -64,6 +81,11 @@ async def main():
         print("\n=== recommend_products ===")
         similar = await recommend_products(product_id)
         print(similar)
+
+        print("\n=== check_availability ===")
+        availability = await check_availability(product_id)
+        print(availability)
+
 
 
 if __name__ == "__main__":
