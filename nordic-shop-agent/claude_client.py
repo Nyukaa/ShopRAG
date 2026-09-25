@@ -12,7 +12,7 @@ from tools import (
 )
 
 client = AsyncAnthropic(api_key=ANTHROPIC_API_KEY)
-model = "claude-sonnet-5"
+model = "claude-haiku-4-5-20251001"
 
 SYSTEM_PROMPT = """You are a helpful and elegant shopping assistant for Nordic Shop.
 

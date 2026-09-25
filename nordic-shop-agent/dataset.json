@@ -1,0 +1,228 @@
+[
+  {
+    "id": "simple_search_lamps_1",
+    "conversation": [
+      "Do you have any Nordic lamps available?"
+    ],
+    "expect_tool_call_on_last_turn": true,
+    "expected_tool_name": "search_products",
+    "solution_criteria": "Must call search_products with 'lamps' or similar query and present results accurately"
+  },
+  {
+    "id": "simple_search_candles_1",
+    "conversation": [
+      "I'm looking for scented candles"
+    ],
+    "expect_tool_call_on_last_turn": true,
+    "expected_tool_name": "search_products",
+    "solution_criteria": "Must call search_products and only mention candles that match the query"
+  },
+  {
+    "id": "simple_search_mirrors_1",
+    "conversation": [
+      "Do you sell mirrors?"
+    ],
+    "expect_tool_call_on_last_turn": true,
+    "expected_tool_name": "search_products",
+    "solution_criteria": "Must call search_products for mirrors and accurately describe available options"
+  },
+  {
+    "id": "simple_search_wall_art_1",
+    "conversation": [
+      "Show me your wall art collection"
+    ],
+    "expect_tool_call_on_last_turn": true,
+    "expected_tool_name": "search_products",
+    "solution_criteria": "Must call search_products and present wall art products found in the catalog"
+  },
+  {
+    "id": "context_reuse_color_question",
+    "conversation": [
+      "Do you have any white vases?",
+      "What about the dimensions of that vase?"
+    ],
+    "expect_tool_call_on_last_turn": false,
+    "expected_tool_name": null,
+    "solution_criteria": "Must reference the previously discussed vase without making a new search; provide dimension info based on context"
+  },
+  {
+    "id": "context_reuse_price_question",
+    "conversation": [
+      "I'm interested in pendant lamps",
+      "Is that the most expensive option you have?"
+    ],
+    "expect_tool_call_on_last_turn": false,
+    "expected_tool_name": null,
+    "solution_criteria": "Must answer about the previously mentioned pendant lamps without a new tool call; compare to context"
+  },
+  {
+    "id": "context_reuse_material_question",
+    "conversation": [
+      "Show me candles in your store",
+      "What material is it made of?"
+    ],
+    "expect_tool_call_on_last_turn": false,
+    "expected_tool_name": null,
+    "solution_criteria": "Must refer to the previously mentioned candle and describe its material without a new search"
+  },
+  {
+    "id": "context_reuse_recommendation",
+    "conversation": [
+      "Do you have blue mirrors?",
+      "Can you suggest something similar to that?"
+    ],
+    "expect_tool_call_on_last_turn": false,
+    "expected_tool_name": null,
+    "solution_criteria": "Must use context about the previously discussed mirror; should not call search or recommend tools"
+  },
+  {
+    "id": "new_search_after_context",
+    "conversation": [
+      "Do you have minimalist lamps?",
+      "Actually, show me your candles instead"
+    ],
+    "expect_tool_call_on_last_turn": true,
+    "expected_tool_name": "search_products",
+    "solution_criteria": "Must call search_products for candles; must not reference or reuse the lamp results"
+  },
+  {
+    "id": "new_search_different_category",
+    "conversation": [
+      "I'm looking for a Nordic vase",
+      "Now I need wall art for my bedroom"
+    ],
+    "expect_tool_call_on_last_turn": true,
+    "expected_tool_name": "search_products",
+    "solution_criteria": "Must call search_products for wall art; must not mix in vase results from previous turn"
+  },
+  {
+    "id": "new_search_after_details",
+    "conversation": [
+      "Do you have large mirrors?",
+      "Actually, what candles do you stock?"
+    ],
+    "expect_tool_call_on_last_turn": true,
+    "expected_tool_name": "search_products",
+    "solution_criteria": "Must perform a fresh search for candles; previous mirror context should not influence results"
+  },
+  {
+    "id": "new_search_unrelated_product",
+    "conversation": [
+      "Show me pendant lamps",
+      "Do you have any decorative vases?"
+    ],
+    "expect_tool_call_on_last_turn": true,
+    "expected_tool_name": "search_products",
+    "solution_criteria": "Must call search_products for vases as a new, independent request unrelated to lamps"
+  },
+  {
+    "id": "nonexistent_product_request_1",
+    "conversation": [
+      "Do you sell Nordic furniture sets?"
+    ],
+    "expect_tool_call_on_last_turn": true,
+    "expected_tool_name": "search_products",
+    "solution_criteria": "Must call search_products; must honestly report if no furniture sets exist without inventing products"
+  },
+  {
+    "id": "nonexistent_product_request_2",
+    "conversation": [
+      "I'm looking for smart LED bulbs with WiFi control"
+    ],
+    "expect_tool_call_on_last_turn": true,
+    "expected_tool_name": "search_products",
+    "solution_criteria": "Must call search_products; must not hallucinate smart bulbs if they don't exist in catalog"
+  },
+  {
+    "id": "nonexistent_product_request_3",
+    "conversation": [
+      "Do you have any rugs or carpets?"
+    ],
+    "expect_tool_call_on_last_turn": true,
+    "expected_tool_name": "search_products",
+    "solution_criteria": "Must search for rugs; must clarify if rugs aren't in the catalog instead of making them up"
+  },
+  {
+    "id": "nonexistent_product_request_4",
+    "conversation": [
+      "I need outdoor garden lanterns"
+    ],
+    "expect_tool_call_on_last_turn": true,
+    "expected_tool_name": "search_products",
+    "solution_criteria": "Must search for garden lanterns; must not invent products if they're not in the home decor catalog"
+  },
+  {
+    "id": "availability_check_lamps",
+    "conversation": [
+      "Do you have lamps in stock right now?"
+    ],
+    "expect_tool_call_on_last_turn": true,
+    "expected_tool_name": "search_products",
+    "solution_criteria": "Should search for lamps first, then may need to check_availability for specific product to confirm stock levels"
+  },
+  {
+    "id": "availability_check_specific",
+    "conversation": [
+      "Show me white candles",
+      "How many of those do you have in stock?"
+    ],
+    "expect_tool_call_on_last_turn": true,
+    "expected_tool_name": "check_availability",
+    "solution_criteria": "Must call check_availability for the previously mentioned candle product and report actual stock quantity"
+  },
+  {
+    "id": "availability_check_mirrors",
+    "conversation": [
+      "Is the large round mirror currently available?"
+    ],
+    "expect_tool_call_on_last_turn": true,
+    "expected_tool_name": "search_products",
+    "solution_criteria": "Should search for the mirror first, then check_availability to confirm stock status"
+  },
+  {
+    "id": "availability_check_multiple",
+    "conversation": [
+      "What vases do you have?",
+      "Are these vases in stock?"
+    ],
+    "expect_tool_call_on_last_turn": true,
+    "expected_tool_name": "check_availability",
+    "solution_criteria": "Must call check_availability for the vase product(s) and report real inventory numbers"
+  },
+  {
+    "id": "off_topic_weather",
+    "conversation": [
+      "What's the weather like in Copenhagen today?"
+    ],
+    "expect_tool_call_on_last_turn": false,
+    "expected_tool_name": null,
+    "solution_criteria": "Must not call any shopping tools; must politely decline and redirect to Nordic Shop assistance"
+  },
+  {
+    "id": "off_topic_recipe",
+    "conversation": [
+      "Can you give me a recipe for Swedish meatballs?"
+    ],
+    "expect_tool_call_on_last_turn": false,
+    "expected_tool_name": null,
+    "solution_criteria": "Must not call any tools; must politely explain this is outside the scope of the shopping assistant"
+  },
+  {
+    "id": "off_topic_tech_support",
+    "conversation": [
+      "Help me fix my laptop's WiFi connection"
+    ],
+    "expect_tool_call_on_last_turn": false,
+    "expected_tool_name": null,
+    "solution_criteria": "Must not call any shopping tools; must politely refuse and offer Nordic Shop help instead"
+  },
+  {
+    "id": "off_topic_sports",
+    "conversation": [
+      "Who won the Nordic skiing championship this year?"
+    ],
+    "expect_tool_call_on_last_turn": false,
+    "expected_tool_name": null,
+    "solution_criteria": "Must not call any tools; must politely decline and refocus on home decor shopping assistance"
+  }
+]
