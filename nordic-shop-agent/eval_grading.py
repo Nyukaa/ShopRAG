@@ -67,8 +67,9 @@ Example: ["Bjorn Table Lamp", "Sven Desk Lamp"]
     messages = [{"role": "user", "content": prompt}]
     response = client.messages.create(
         model=grader_model,
-        max_tokens=300,
+        max_tokens=500,
         messages=messages,
+        output_config={"effort": "low"},  # simple extraction task, no need for high effort
     )
     try:
         return _parse_json_loose(_get_text(response))
@@ -94,19 +95,37 @@ def grade_groundedness(reply: str, all_products_seen: set) -> float:
     return round(10 * grounded_count / len(mentioned), 1)
 
 
-def grade_by_model(test_case: dict, conversation: list, reply: str) -> dict:
-    """Model-based judgment against the scenario's solution_criteria."""
+def grade_by_model(test_case: dict, conversation: list, reply: str, tool_calls: list) -> dict:
+    """Model-based judgment against the scenario's solution_criteria.
+    Tool call facts are passed in explicitly so the grader judges the
+    *content* of the reply against criteria, rather than guessing from the
+    text whether a tool was used — the system prompt tells the agent not to
+    narrate its own tool use, so that would be unjudgeable from text alone."""
+    tool_call_summary = (
+        ", ".join(f"{c['name']}({c['input']})" for c in tool_calls)
+        if tool_calls
+        else "No tool was called on this turn."
+    )
+
     eval_prompt = f"""
 You are an expert reviewer for an AI shopping assistant chatbot.
 
 Conversation:
 {json.dumps(conversation, indent=2)}
 
+FACT (already verified, not something to judge): tool calls made in response to the
+last message were: {tool_call_summary}
+
 Assistant's final reply:
 {reply}
 
 Criteria the reply should meet:
 {test_case["solution_criteria"]}
+
+Do NOT penalize the reply for "not showing" or "not demonstrating" that a tool was called —
+whether a tool was called is already given as fact above. Judge only the CONTENT of the reply:
+is it accurate, complete, well-grounded, and appropriately toned given what the tools actually
+returned and the criteria above?
 
 Return ONLY valid JSON:
 {{
@@ -124,7 +143,8 @@ Rules:
     messages = [{"role": "user", "content": eval_prompt}]
     response = client.messages.create(
         model=grader_model,
-        max_tokens=400,
+        max_tokens=800,
         messages=messages,
+        output_config={"effort": "low"},  # simple structured grading task
     )
     return _parse_json_loose(_get_text(response))

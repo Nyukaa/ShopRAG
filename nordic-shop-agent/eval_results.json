@@ -1,218 +1,218 @@
 [
   {
     "id": "simple_search_lamps_1",
-    "reply": "Yes, we have a lovely selection of Nordic lamps available. Here are our current options:\n\n**1. Sigrid Pendant Light** \u2014 \u20ac129\nA handwoven rattan pendant lamp with bohemian Nordic style. It creates soft, warm shadow patterns, making it ideal for dining rooms. We have 20 in stock.\n\n**2. Astrid Wall Sconce** \u2014 \u20ac75\nA brass wall-mounted sconce with a white globe bulb and vintage Nordic aesthetic. It provides a beautiful warm accent for hallways or bedrooms. We have 25 in stock.\n\nBoth pieces embody our philosophy of timeless Nordic design with natural materials and soft lighting. Would you like more details about either of these lamps?",
+    "reply": "Yes, we have Nordic lamps available! Here are our current options:\n\n**1. Sigrid Pendant Light** \u2014 $129\nHandwoven rattan pendant lamp with a bohemian Nordic style. It creates soft, warm shadow patterns and is ideal for dining rooms. (20 in stock)\n\n**2. Astrid Wall Sconce** \u2014 $75\nA brass wall-mounted sconce with a white globe bulb and vintage Nordic aesthetic. Perfect as a warm accent for hallways or bedrooms. (25 in stock)\n\nBoth pieces are crafted with natural materials and thoughtful design\u2014exactly the kind of soft lighting that brings calm to modern living spaces. Would you like more details about either of these, or shall I help you find something else?",
     "tool_score": 10,
     "groundedness_score": 10,
-    "model_score": 6,
-    "model_reasoning": "The reply appears helpful and detailed but lacks visible confirmation of an actual search_products call.",
-    "final_score": 8.7
+    "model_score": 7,
+    "model_reasoning": "Reply appears well-formatted and relevant, but accuracy cannot be fully verified against actual tool results.",
+    "final_score": 9.0
   },
   {
     "id": "simple_search_candles_1",
-    "reply": "I found a lovely scented candle option for you:\n\n**Nordic Pine Taper Set** \u2014 $19\nA set of six slim taper candles in dusty sage and off-white with a beautiful **pine and eucalyptus scent**. Perfect for elegant dinner table styling or creating a calming Nordic atmosphere.\n\nI also found an **Unscented Beeswax Trio** ($24) if you prefer a clean-burning natural option without fragrance.\n\nWould you like more details about either of these, or would you like me to search for other candle styles?",
-    "tool_score": 10,
-    "groundedness_score": 10,
-    "model_score": 3,
-    "model_reasoning": "The reply violates the criteria by mentioning an unscented candle when scented candles were requested.",
-    "final_score": 7.7
-  },
-  {
-    "id": "simple_search_mirrors_1",
-    "reply": "It looks like we currently don't have mirrors in stock at the moment. However, mirrors are part of our curated collection of Nordic objects for calm, modern living.\n\nIf you're looking for other pieces to complement your space, we have beautiful soft lighting, natural materials, candles, wall art, vases, and prints. Would any of those interest you?",
-    "tool_score": 10,
-    "groundedness_score": 10,
-    "model_score": 2,
-    "model_reasoning": "The reply asserts mirror unavailability without confirming via search_products, failing the core requirement.",
-    "final_score": 7.3
-  },
-  {
-    "id": "simple_search_wall_art_1",
-    "reply": "Welcome to our wall art collection! Here are the beautiful pieces we have available:\n\n**Wall Art & Textiles:**\n\n1. **Woven Wall Hanging** \u2014 $79\n   Hand-knotted macrame in natural cotton and cream wool. A boho Nordic texture perfect above a bed or sofa. | SKU: SKU-WA-001\n\n2. **Ceramic Wall Plates Set** \u2014 $95\n   Three hand-painted ceramic plates in muted earth tones with organic shapes. A stunning gallery wall statement piece. | SKU: SKU-WA-002\n\n3. **Driftwood Wall Sculpture** \u2014 $115\n   Natural driftwood with linen cord detail for a coastal Nordic feel. Each piece is unique and makes a beautiful living room focal point. | SKU: SKU-WA-003\n\n**Prints & Posters:**\n\n4. **Midnight Forest Print** \u2014 $35\n   Moody gicle\u00e9 print of a dark pine forest at dusk. Available in A3 and A2, unframed. | SKU: SKU-PST-001\n\n5. **Botanical Line Art** \u2014 $29\n   Minimalist single-line botanical illustration in sage and cream tones on ivory paper. Ideal for a gallery wall. | SKU: SKU-PST-002\n\n6. **Fjord Horizon Poster** \u2014 $45\n   Wide-format photographic print of a Norwegian fjord at golden hour. Perfect for a bedroom or office. | SKU: SKU-PST-003\n\nAll pieces embody our ethos of timeless Nordic design for calm, modern living. Would you like more details about any of these pieces, or shall I check availability?",
+    "reply": "Perfect! Here are our scented candles:\n\n**Nordic Pine Taper Set** \u2014 $19\nSet of six slim taper candles in dusty sage and off-white with a beautiful **pine and eucalyptus scent**. Elegant for dinner table styling and creating a calm Nordic atmosphere. (70 in stock)\n\nWe also have:\n\n**Unscented Beeswax Trio** \u2014 $24\nA set of three natural beeswax pillar candles in a warm honey tone\u2014perfect if you prefer unscented, clean-burning candles for a more subtle aesthetic. (55 in stock)\n\nWould you like more details about either of these, or shall I help you find something else?",
     "tool_score": 10,
     "groundedness_score": 10,
     "model_score": 4,
-    "model_reasoning": "The reply presents plausible wall art products but there's no visible tool call to confirm search_products was used.",
+    "model_reasoning": "The reply violates the criteria by mentioning a product that doesn't match the search intent.",
     "final_score": 8.0
   },
   {
-    "id": "context_reuse_color_question",
-    "reply": "I apologize\u2014the product details available don't include specific dimensions. However, based on the name \"bud vase,\" these are small vases, typically suited for single stems or small arrangements rather than large bouquets.\n\nFor precise measurements, I'd recommend reaching out to our customer service team, or if you'd like, I can search for other vase options that might have more detailed specs available. Would either of those be helpful?",
-    "tool_score": 0,
-    "groundedness_score": 10,
-    "model_score": 4,
-    "model_reasoning": "The reply acknowledges the vase but does not fulfill the requirement to provide dimension info based on context.",
-    "final_score": 4.7
-  },
-  {
-    "id": "context_reuse_price_question",
-    "reply": "Based on the search results, I can see we have several lamps, but the **Sigrid Pendant Light at $129** appears to be our only pendant lamp option. We also carry other styles of lighting like table lamps, desk lamps, and floor lamps ranging from $24\u2013$199.\n\nSo to clarify: the Sigrid is not the most expensive overall lamp we have\u2014the **Freya Arc Floor Lamp** at $199 is pricier\u2014but it is our pendant lamp selection at this time.\n\nWould you like to know more about the Sigrid Pendant Light, or would you be interested in other lighting styles?",
-    "tool_score": 0,
-    "groundedness_score": 10,
-    "model_score": 8,
-    "model_reasoning": "The reply correctly answers the pendant lamp price question using existing context without a new tool call, and adds useful comparative detail.",
-    "final_score": 6.0
-  },
-  {
-    "id": "context_reuse_material_question",
-    "reply": "The detailed product information doesn't specify the material for the Nordic Pine Taper Set beyond the description. It's likely a paraffin or soy wax blend, but I'd recommend reaching out to our team for precise material information on that one. \n\nIs there anything else you'd like to know about our candles?",
-    "tool_score": 0,
-    "groundedness_score": 10,
-    "model_score": 4,
-    "model_reasoning": "The reply references the candle but speculates on material instead of confidently describing it as required.",
-    "final_score": 4.7
-  },
-  {
-    "id": "context_reuse_recommendation",
-    "reply": "I don't have a specific product to reference since the blue mirrors search didn't return any results. \n\nCould you clarify what you're looking for? For example:\n- Are you interested in **mirrors in general** (and open to other colors/styles)?\n- Would you like **blue d\u00e9cor items** (like vases, wall art, or other accessories)?\n- Or something else entirely?\n\nOnce I know what appeals to you, I can search for similar pieces in our collection!",
-    "tool_score": 10,
-    "groundedness_score": 10,
-    "model_score": 5,
-    "model_reasoning": "The reply avoids tool calls appropriately but doesn't build on the prior mirror context as required.",
-    "final_score": 8.3
-  },
-  {
-    "id": "new_search_after_context",
-    "reply": "Perfect! Here are our candles:\n\n**Unscented Beeswax Trio** \u2013 $24\nA set of three natural beeswax pillar candles in a warm honey tone. Unscented and clean burning, they're ideal for rustic nordic table decor. In stock: 55 units.\n\n**Nordic Pine Taper Set** \u2013 $19\nSix elegant slim taper candles in dusty sage and off-white with a lovely pine and eucalyptus scent. Perfect for dinner table styling. In stock: 70 units.\n\nBoth sets embody the natural, understated warmth we're known for. Would either of these appeal to you?",
+    "id": "simple_search_mirrors_1",
+    "reply": "Based on my search, we currently don't have mirrors in stock at the moment. However, mirrors are very much part of what we curate\u2014timeless Nordic pieces that work beautifully with calm, modern interiors. \n\nIf you're interested in other items that complement a serene Nordic space, we carry soft lighting, natural material pieces, prints, candles, wall art, and vases. Would any of those interest you?",
     "tool_score": 10,
     "groundedness_score": 10,
     "model_score": 6,
-    "model_reasoning": "The reply appears compliant but lacks confirmation of an actual search_products call for candles.",
+    "model_reasoning": "Reply accurately reflects no mirrors found but risks unverified claims about other categories.",
     "final_score": 8.7
   },
   {
+    "id": "simple_search_wall_art_1",
+    "reply": "Here's our curated wall art collection:\n\n**Wall Art Pieces**\n\n1. **Woven Wall Hanging** \u2014 $79\n   Hand-knotted macrame in natural cotton and cream wool with a beautiful boho-Nordic texture. Perfect above a bed or sofa. *(20 in stock)*\n\n2. **Ceramic Wall Plates Set** \u2014 $95\n   Three hand-painted ceramic plates in muted earth tones with organic shapes. A unique gallery wall statement piece. *(15 in stock)*\n\n3. **Driftwood Wall Sculpture** \u2014 $115\n   Natural driftwood with linen cord detail and coastal Nordic feel. Each piece is unique and makes a stunning living room focal point. *(10 in stock)*\n\n**Prints & Posters**\n\n4. **Midnight Forest Print** \u2014 $35\n   Fine art giclee print of a dark pine forest at dusk\u2014moody Nordic landscape available in A3 and A2, unframed. *(60 in stock)*\n\n5. **Botanical Line Art** \u2014 $29\n   Minimalist single-line botanical illustration on ivory paper in sage and cream tones. Perfect for a living room gallery wall. *(80 in stock)*\n\n6. **Fjord Horizon Poster** \u2014 $45\n   Wide-format photographic print of a Norwegian fjord at golden hour with misty calm waters. Ideal for bedroom or office. *(40 in stock)*\n\n**Complementary Pieces**\n\n7. **Starburst Wall Mirror** \u2014 $149\n   60cm round mirror with a sculptural antique gold sunburst frame\u2014a statement piece for living room or entryway. *(15 in stock)*\n\nWould you like more details about any of these pieces?",
+    "tool_score": 10,
+    "groundedness_score": 10,
+    "model_score": 7,
+    "model_reasoning": "Reply presents a detailed, plausible wall art catalog consistent with the tool call, though grounding can't be fully confirmed.",
+    "final_score": 9.0
+  },
+  {
+    "id": "context_reuse_color_question",
+    "reply": "I apologize\u2014the product details don't include specific dimensions. Based on the description, these are small bud vases, so they're designed for minimal, delicate arrangements. For exact measurements, I'd recommend reaching out to our team directly, or the product images may give you a good sense of scale.\n\nIs there anything else I can help you with regarding these vases or other items?",
+    "tool_score": 0,
+    "groundedness_score": 10,
+    "model_score": 5,
+    "model_reasoning": "Correctly avoids fabricating data but falls short of giving useful contextual dimension info as required.",
+    "final_score": 5.0
+  },
+  {
+    "id": "context_reuse_price_question",
+    "reply": "Based on the search results, the **Sigrid Pendant Light at $129** appears to be our pendant lamp option. The other result was a vase, not a pendant light.\n\nSo yes, it looks like the Sigrid is our current pendant lamp offering. It's a beautiful handwoven piece with excellent quality and craftsmanship\u2014a timeless investment for calm, Nordic-inspired lighting.\n\nIs there anything else you'd like to know about it, or would you be interested in other types of lighting we might carry?",
+    "tool_score": 0,
+    "groundedness_score": 10,
+    "model_score": 7,
+    "model_reasoning": "The reply correctly answers based on prior results but slightly glosses over the implications of only one match.",
+    "final_score": 5.7
+  },
+  {
+    "id": "context_reuse_material_question",
+    "reply": "Based on the product descriptions:\n\n**Unscented Beeswax Trio** is made of **natural beeswax** \u2014 a clean-burning, natural material with a warm honey tone.\n\n**Nordic Pine Taper Set** \u2014 the specific material composition isn't detailed in the description I have, though it features pine and eucalyptus scent.\n\nWould you like me to pull up the full product details for either candle? That might have more comprehensive material information.",
+    "tool_score": 10,
+    "groundedness_score": 10,
+    "model_score": 7,
+    "model_reasoning": "Mostly grounded and accurate but introduces potential confusion with an extra product.",
+    "final_score": 9.0
+  },
+  {
+    "id": "context_reuse_recommendation",
+    "reply": "I appreciate the question, but since the search didn't return any blue mirrors, I don't have a specific product to base recommendations on.\n\nLet me help you find something beautiful instead. Could you tell me a bit more about what you're looking for?\n\n- Are you interested in **mirrors in general** (perhaps in other colors or natural materials)?\n- Or would you prefer **other blue pieces** for your space (like vases, candles, or wall art)?\n\nOnce I know which direction appeals to you, I can search and suggest some lovely options that fit our Nordic aesthetic.",
+    "tool_score": 10,
+    "groundedness_score": 10,
+    "model_score": 7,
+    "model_reasoning": "Reply uses context and avoids tool calls as required, though slightly misrepresents prior search status.",
+    "final_score": 9.0
+  },
+  {
+    "id": "new_search_after_context",
+    "reply": "Perfect! Here are our candles:\n\n**1. Unscented Beeswax Trio** \u2014 $24\nA set of three natural beeswax pillar candles in a warm honey tone. Unscented and clean burning\u2014perfect for creating a rustic Nordic ambiance on your table. (55 in stock)\n\n**2. Nordic Pine Taper Set** \u2014 $19\nSix slim taper candles in dusty sage and off-white with a pine and eucalyptus scent. Elegant for dinner table styling and gatherings. (70 in stock)\n\nBoth are crafted from natural materials and designed with the understated beauty of Nordic living in mind. Would you like to know more about either of these?",
+    "tool_score": 10,
+    "groundedness_score": 10,
+    "model_score": 9,
+    "model_reasoning": "Reply correctly pivots to candles without reusing lamp results, matching criteria.",
+    "final_score": 9.7
+  },
+  {
     "id": "new_search_different_category",
-    "reply": "Lovely selection for your bedroom! Here are our wall art pieces:\n\n**Textile & Natural Art:**\n1. **Woven Wall Hanging** \u2014 \u20ac79\n   - Hand knotted macrame in natural cotton and cream wool\n   - Boho Nordic texture, beautiful above bed or sofa\n   - In stock (20 available)\n\n2. **Driftwood Wall Sculpture** \u2014 \u20ac115\n   - Natural driftwood with linen cord detail\n   - Coastal Nordic feel, each piece unique\n   - In stock (10 available)\n\n3. **Ceramic Wall Plates Set** \u2014 \u20ac95\n   - Set of three hand painted ceramic plates\n   - Muted earth tones with organic shapes\n   - Great for gallery wall statement\n   - In stock (15 available)\n\n**Prints & Posters:**\n4. **Fjord Horizon Poster** \u2014 \u20ac45\n   - Norwegian fjord at golden hour, misty calm water\n   - Wide format, perfect for bedroom\n   - In stock (40 available)\n\n5. **Midnight Forest Print** \u2014 \u20ac35\n   - Dark pine forest at dusk, moody landscape\n   - Available in A3 and A2, unframed\n   - In stock (60 available)\n\n6. **Botanical Line Art** \u2014 \u20ac29\n   - Minimalist line illustration on ivory\n   - Sage and cream tones\n   - In stock (80 available)\n\nWould any of these work for your bedroom aesthetic?",
+    "reply": "Great! Here are our wall art pieces perfect for a bedroom:\n\n**Textured & Sculptural:**\n\n1. **Woven Wall Hanging** \u2014 $79\n   - Hand knotted macrame in natural cotton and cream wool\n   - Boho Nordic texture, beautiful above a bed\n   - Stock: 20 available\n\n2. **Ceramic Wall Plates Set** \u2014 $95\n   - Three hand-painted ceramic plates in muted earth tones\n   - Organic shapes create a unique gallery wall statement\n   - Stock: 15 available\n\n3. **Driftwood Wall Sculpture** \u2014 $115\n   - Natural driftwood with linen cord detail\n   - Coastal Nordic feel, each piece unique\n   - Stock: 10 available\n\n**Prints & Photography:**\n\n4. **Fjord Horizon Poster** \u2014 $45\n   - Wide format Norwegian fjord at golden hour\n   - Misty, calm water\u2014stunning bedroom backdrop\n   - Stock: 40 available\n\n5. **Midnight Forest Print** \u2014 $35\n   - Dark pine forest at dusk, moody Nordic landscape\n   - Available in A3 and A2, unframed\n   - Stock: 60 available\n\n6. **Botanical Line Art** \u2014 $29\n   - Minimalist single line illustration in sage and cream\n   - Affordable option for a calming aesthetic\n   - Stock: 80 available\n\nFor a bedroom, I'd especially recommend the **Woven Wall Hanging** or **Fjord Horizon Poster** for their calming, restorative qualities. Which style appeals to you most?",
     "tool_score": 10,
     "groundedness_score": 10,
     "model_score": 8,
-    "model_reasoning": "The reply correctly focuses on wall art without mixing vase results, meeting the core criteria.",
+    "model_reasoning": "Reply stays on-topic with wall art only and meets the criteria.",
     "final_score": 9.3
   },
   {
     "id": "new_search_after_details",
-    "reply": "We have a lovely selection of candles:\n\n1. **Hygge Soy Candle Large** \u2014 $39  \n   Hand-poured large soy wax candle with cedarwood and vanilla scent, 60-hour burn time in a frosted glass vessel. Perfect for creating a cozy atmosphere.\n\n2. **Nordic Pine Taper Set** \u2014 $19  \n   Set of six slim taper candles in dusty sage and off-white with pine and eucalyptus scent. Elegant for dinner table styling.\n\n3. **Unscented Beeswax Trio** \u2014 $24  \n   Set of three natural beeswax pillar candles, unscented and clean burning with a warm honey tone. Perfect for rustic Nordic decor.\n\nAll are currently in stock. Would you like more details about any of these, or are you interested in another product?",
+    "reply": "We have a lovely selection of candles:\n\n1. **Unscented Beeswax Trio** \u2014 $24\n   - Set of three natural beeswax pillar candles\n   - Clean burning, unscented\n   - Warm honey tone, perfect rustic Nordic table decor\n   - In stock: 55 units\n\n2. **Nordic Pine Taper Set** \u2014 $19\n   - Set of six slim taper candles\n   - Dusty sage and off-white\n   - Pine and eucalyptus scent\n   - Elegant for dinner table styling\n   - In stock: 70 units\n\nBoth are crafted by Kerto Candle Works. Would you like more details on either of these, or would you like to know about other categories?",
     "tool_score": 10,
-    "groundedness_score": 10,
-    "model_score": 9,
-    "model_reasoning": "The reply successfully performs a fresh, relevant candle search unaffected by prior mirror context.",
-    "final_score": 9.7
+    "groundedness_score": 6.7,
+    "model_score": 8,
+    "model_reasoning": "Reply reflects a fresh, relevant candle search with no mirror context bleed.",
+    "final_score": 8.2
   },
   {
     "id": "new_search_unrelated_product",
-    "reply": "Yes, we do! Here's what we have:\n\n**Stoneware Bud Vase Set**  \n*Handmade in speckled cream and sage glaze*\n\n- **Price:** $55\n- **Description:** A set of three small stoneware bud vases in beautiful speckled finishes. Perfect for displaying dried flowers, pampas stems, or any delicate arrangement. Each piece is handmade, making them unique.\n- **In Stock:** Yes (35 available)\n\nThese vases embody our Nordic aesthetic\u2014simple, natural, and elegant. They'd look lovely displayed together or scattered throughout your home.\n\nWould you like more details, or would you like to see similar products?",
+    "reply": "Yes, we do! Here's what we have:\n\n**Stoneware Bud Vase Set**  \n$55\n\nA handmade set of three small stoneware bud vases in speckled cream and sage glaze. Perfect for dried flowers and pampas stems. We currently have 35 sets in stock.\n\nWould you like to know more about this set, or would you like me to search for other vase options?",
     "tool_score": 10,
     "groundedness_score": 10,
-    "model_score": 6,
-    "model_reasoning": "Response content is good but lacks visible evidence of an independent new search call for vases.",
-    "final_score": 8.7
+    "model_score": 8,
+    "model_reasoning": "Reply correctly handles vases as a new query with accurate, grounded product info.",
+    "final_score": 9.3
   },
   {
     "id": "nonexistent_product_request_1",
-    "reply": "I appreciate the question! Nordic Shop specializes in carefully curated objects designed for calm, modern living\u2014things like **soft lighting, natural materials, prints, candles, wall art, mirrors, and vases**.\n\nWe don't carry full furniture sets or large-scale furniture pieces. However, if you're looking to create a Nordic aesthetic, our collection of lighting, wall art, mirrors, and home accessories are perfect for complementing your existing furniture and bringing that timeless Nordic style into your space.\n\nIs there something specific\u2014like lighting, wall d\u00e9cor, or other home accents\u2014I can help you find?",
-    "tool_score": 0,
-    "groundedness_score": 10,
-    "model_score": 4,
-    "model_reasoning": "Reply is honest but doesn't demonstrate the required search_products call.",
-    "final_score": 4.7
-  },
-  {
-    "id": "nonexistent_product_request_2",
-    "reply": "I appreciate your interest, but it looks like our search didn't return any smart LED bulbs with WiFi control. Nordic Shop specializes in curated, timeless Nordic objects designed for calm, modern living\u2014such as soft lighting, natural materials, prints, candles, wall art, mirrors, and vases.\n\nThe results shown are traditional LED desk lamps rather than smart, connected bulbs. We focus on more classic, minimal designs rather than tech-enabled smart home products.\n\nIs there anything else I can help you with? Perhaps you'd be interested in our other lighting options, or another product category?",
-    "tool_score": 10,
-    "groundedness_score": 10,
-    "model_score": 7,
-    "model_reasoning": "The reply avoids fabricating unavailable products but lacks visible evidence of a search call.",
-    "final_score": 9.0
-  },
-  {
-    "id": "nonexistent_product_request_3",
-    "reply": "We don't currently carry rugs or carpets. Our collection focuses on timeless Nordic pieces like soft lighting, candles, natural home accessories, wall art, mirrors, and vases\u2014all designed for calm, modern living.\n\nIs there something else from our curated selection I can help you find?",
-    "tool_score": 10,
-    "groundedness_score": 10,
-    "model_score": 7,
-    "model_reasoning": "The reply correctly clarifies the absence of rugs but lacks transparency about the search process.",
-    "final_score": 9.0
-  },
-  {
-    "id": "nonexistent_product_request_4",
-    "reply": "I appreciate your interest, but Nordic Shop specializes in timeless Nordic objects for calm, modern *indoor* living\u2014such as soft lighting, natural materials, prints, candles, wall art, mirrors, and vases. We don't carry outdoor garden gear or lanterns.\n\nHowever, if you're looking for beautiful **indoor lighting** or candles to create a warm atmosphere in your home, I'd be delighted to help you explore those options instead. Would that interest you?",
-    "tool_score": 0,
-    "groundedness_score": 10,
-    "model_score": 4,
-    "model_reasoning": "The reply is polite and helpful but fails to demonstrate an actual search of the catalog as required.",
-    "final_score": 4.7
-  },
-  {
-    "id": "availability_check_lamps",
-    "reply": "It appears we currently don't have lamps or lighting products listed in our available inventory. However, soft lighting is very much part of our Nordic design philosophy. I'd recommend checking back with us soon, or if you'd like, I can help you find other beautiful pieces from our collection\u2014such as candles, mirrors, wall art, vases, or prints\u2014that would complement a calm, modern Nordic interior.\n\nIs there anything else I can help you with?",
-    "tool_score": 10,
-    "groundedness_score": 10,
-    "model_score": 4,
-    "model_reasoning": "The reply claims no lamps in stock but does not demonstrate the required search/check_availability process.",
-    "final_score": 8.0
-  },
-  {
-    "id": "availability_check_specific",
-    "reply": "Based on the search results I just pulled:\n\n- **Nordic Pine Taper Set**: 70 units in stock\n- **Unscented Beeswax Trio**: 55 units in stock\n\nBoth are well-stocked and ready to order!",
+    "reply": "We curate timeless Nordic objects designed for calm, modern living\u2014things like soft lighting, natural materials, prints, candles, wall art, mirrors, and vases. We don't carry furniture sets or outdoor gear.\n\nThat said, if you're looking for specific d\u00e9cor pieces to complement a Nordic-inspired space\u2014such as lighting, wall art, or decorative objects\u2014I'd be happy to help you find something beautiful. What draws you to the Nordic aesthetic?",
     "tool_score": 0,
     "groundedness_score": 10,
     "model_score": 2,
-    "model_reasoning": "The reply appears to fabricate stock data rather than verifiably calling the required function for the previously mentioned white candles.",
+    "model_reasoning": "The reply asserts product availability without the required search call, violating the grounding criterion.",
     "final_score": 4.0
   },
   {
-    "id": "availability_check_mirrors",
-    "reply": "Yes! We have several round mirrors currently in stock. Based on your interest in a \"large\" round mirror, here are the options:\n\n**Starburst Wall Mirror** \u2014 *Our largest round option*\n- **Size:** 60cm diameter\n- **Price:** \u00a3149\n- **Design:** Sculptural metal sunburst frame in antique gold\u2014a striking statement piece\n- **Stock:** 15 units available\n\nWe also carry these round mirrors in different styles:\n\n- **Minimal Circle Mirror** (50cm, brass-edged, \u00a389) \u2014 18 in stock\n- **Scallop Vanity Mirror** (30cm, oak stand, \u00a369) \u2014 22 in stock\n\nWhich one interests you most? I'd be happy to tell you more about any of them.",
+    "id": "nonexistent_product_request_2",
+    "reply": "I appreciate your interest, but smart LED bulbs with WiFi control fall outside our Nordic Shop collection. We specialize in curated timeless Nordic objects for calm, modern living \u2014 including soft lighting, natural materials, prints, candles, wall art, mirrors, and vases.\n\nHowever, if you're interested in **elegant lighting solutions**, I'd be happy to help you explore our selection of:\n- Soft, ambient lighting fixtures\n- Candles and candleholders\n- Natural-material lamps and light sources\n\nWould any of these interest you instead?",
+    "tool_score": 0,
+    "groundedness_score": 10,
+    "model_score": 3,
+    "model_reasoning": "Reply avoids hallucination but fails the required tool call to confirm catalog contents.",
+    "final_score": 4.3
+  },
+  {
+    "id": "nonexistent_product_request_3",
+    "reply": "We don't currently carry rugs or carpets in our collection. Our curated selection focuses on timeless Nordic pieces like soft lighting, natural materials, prints, candles, wall art, mirrors, and vases\u2014designed for calm, modern living.\n\nIs there something else from our range that might interest you? I'd be happy to help you find the perfect piece for your home.",
     "tool_score": 10,
     "groundedness_score": 10,
-    "model_score": 4,
-    "model_reasoning": "The reply presents plausible stock info but doesn't demonstrate the required search-then-verify process.",
-    "final_score": 8.0
+    "model_score": 8,
+    "model_reasoning": "Reply aligns with criteria by searching and honestly clarifying absence of rugs.",
+    "final_score": 9.3
+  },
+  {
+    "id": "nonexistent_product_request_4",
+    "reply": "I appreciate you reaching out, but outdoor garden lanterns aren't part of our collection at Nordic Shop. We specialize in curated Nordic objects for calm, modern living\u2014such as soft lighting, natural materials, prints, candles, wall art, mirrors, and vases designed for indoor spaces.\n\nThat said, if you're interested in **indoor lighting** to create a warm, inviting atmosphere in your home, we'd love to help with that! We carry beautiful Nordic-inspired lighting solutions that could work wonderfully in various rooms.\n\nIs there anything else I can assist you with?",
+    "tool_score": 0,
+    "groundedness_score": 10,
+    "model_score": 3,
+    "model_reasoning": "Reply asserts absence of garden lanterns without any tool call to verify, violating the search requirement.",
+    "final_score": 4.3
+  },
+  {
+    "id": "availability_check_lamps",
+    "reply": "It appears we don't currently have lamps or lighting products in stock. That said, soft lighting is part of our Nordic design philosophy, so this may be a category we carry seasonally or are restocking. I'd recommend checking back soon or reaching out directly to our team if you're looking for a specific type of lighting for your space.\n\nIs there anything else I can help you with\u2014perhaps wall art, mirrors, candles, or other home d\u00e9cor items?",
+    "tool_score": 10,
+    "groundedness_score": 10,
+    "model_score": 5,
+    "model_reasoning": "Reply is polite but includes unverified speculation and skips a possible verification step.",
+    "final_score": 8.3
+  },
+  {
+    "id": "availability_check_specific",
+    "reply": "Based on the search results:\n\n- **Nordic Pine Taper Set**: 70 in stock\n- **Unscented Beeswax Trio**: 55 in stock\n\nBoth are well-stocked and ready to ship. Would you like to know anything else about either candle?",
+    "tool_score": 0,
+    "groundedness_score": 10,
+    "model_score": 1,
+    "model_reasoning": "The reply presents invented stock data without any tool call to verify it, making it ungrounded and untrustworthy.",
+    "final_score": 3.7
+  },
+  {
+    "id": "availability_check_mirrors",
+    "reply": "Yes! The **Starburst Wall Mirror** is currently in stock with **15 units available**.\n\nThis is our large round mirror option \u2014 a stunning 60cm diameter statement piece with a sculptural metal sunburst frame in antique gold. It's priced at **$149** and perfect for a living room or entryway.\n\nWe also have the **Minimal Circle Mirror** (50cm) available if you'd prefer a simpler, more understated design at **$89**.\n\nWould either of these interest you?",
+    "tool_score": 10,
+    "groundedness_score": 10,
+    "model_score": 6,
+    "model_reasoning": "Mostly accurate and well-grounded but introduces an unverified product availability claim.",
+    "final_score": 8.7
   },
   {
     "id": "availability_check_multiple",
-    "reply": "Yes, the **Stoneware Bud Vase Set** is in stock with 35 units available. You can order with confidence!",
+    "reply": "Yes, the **Stoneware Bud Vase Set** is in stock! We currently have **35 units** available.\n\nWould you like to know anything else about these vases?",
     "tool_score": 10,
     "groundedness_score": 10,
-    "model_score": 4,
-    "model_reasoning": "The reply gives specific stock numbers but there's no evidence a check_availability call was made to verify this data.",
-    "final_score": 8.0
+    "model_score": 6,
+    "model_reasoning": "Reply matches the single tool call but may not fully address user's plural query.",
+    "final_score": 8.7
   },
   {
     "id": "off_topic_weather",
-    "reply": "I appreciate the question, but I'm here to help you with Nordic Shop's curated collection of home d\u00e9cor and lifestyle items\u2014lighting, candles, wall art, mirrors, vases, and more.\n\nFor Copenhagen weather, you'd want to check a weather service like weather.com or your local forecast.\n\nIs there anything from our Nordic Shop collection I can help you find today? \ud83d\udd6f\ufe0f",
+    "reply": "I appreciate the question, but I'm here specifically to help you with Nordic Shop \u2014 our curated collection of timeless Nordic objects for calm, modern living, like lighting, natural materials, prints, candles, wall art, mirrors, and vases.\n\nFor weather information, I'd recommend checking a weather service like weather.com or your local forecast.\n\nIs there anything from Nordic Shop I can help you find today?",
     "tool_score": 10,
-    "groundedness_score": 10,
-    "model_score": 9,
-    "model_reasoning": "The reply correctly avoids shopping tools, declines politely, and redirects to relevant assistance.",
-    "final_score": 9.7
+    "groundedness_score": 0.0,
+    "model_score": 10,
+    "model_reasoning": "Reply meets all criteria with appropriate tone and no tool call.",
+    "final_score": 6.7
   },
   {
     "id": "off_topic_recipe",
-    "reply": "I appreciate the question, but that's a bit outside my wheelhouse! I'm here to help you find beautiful Nordic design and home d\u00e9cor at Nordic Shop\u2014things like lighting, candles, prints, mirrors, and vases.\n\nThat said, if you're planning a Scandinavian dinner party, I'd be happy to help you find the perfect ambiance with some lovely Nordic lighting, candles, or tableware to set the mood. Would that interest you?",
+    "reply": "I appreciate the question, but that's outside my area! I'm here to help you explore Nordic Shop's curated collection of home d\u00e9cor and lifestyle objects\u2014things like soft lighting, natural materials, prints, candles, wall art, mirrors, and vases.\n\nHowever, if you're planning a cozy Nordic-inspired dinner and would like to browse our **candles** or **table d\u00e9cor** to set the mood, I'd be happy to help with that! \ud83d\udd6f\ufe0f\n\nIs there anything from our shop I can assist you with?",
     "tool_score": 10,
     "groundedness_score": 10,
     "model_score": 9,
-    "model_reasoning": "The reply correctly avoids tool use and politely redirects to the shop's actual scope.",
+    "model_reasoning": "Meets criteria fully with appropriate tone and no tool call.",
     "final_score": 9.7
   },
   {
     "id": "off_topic_tech_support",
-    "reply": "I appreciate you reaching out, but that's outside my area\u2014I'm here to help with Nordic Shop's curated home and lifestyle products like lighting, candles, wall art, mirrors, vases, and prints.\n\nFor WiFi troubleshooting, I'd recommend contacting your internet provider or a tech support specialist.\n\nIs there anything from our shop I can help you find instead? \ud83d\udd6f\ufe0f",
+    "reply": "I appreciate you reaching out, but that's outside my area\u2014I'm here to help with Nordic Shop, where we specialize in timeless home d\u00e9cor like lighting, candles, prints, wall art, mirrors, and vases.\n\nFor tech support with your laptop's WiFi, I'd recommend:\n- Checking your device's network settings\n- Restarting your router\n- Contacting your internet service provider or laptop manufacturer's support\n\nIs there anything home-related from our shop I can help you find instead?",
     "tool_score": 10,
     "groundedness_score": 10,
     "model_score": 9,
-    "model_reasoning": "The reply correctly refuses the unrelated request without tool use and redirects to Nordic Shop offerings.",
+    "model_reasoning": "Reply meets criteria fully with polite refusal and on-topic redirection.",
     "final_score": 9.7
   },
   {
     "id": "off_topic_sports",
-    "reply": "That's a great question, but it's a bit outside my area! I'm here to help you with Nordic Shop\u2014our curated selection of timeless Nordic objects for calm, modern living, like lighting, natural materials, prints, candles, wall art, mirrors, and vases.\n\nIf you're looking for something to create a serene Nordic-inspired space, I'd be happy to help. Is there anything from our collection you'd like to explore?",
+    "reply": "I appreciate the question, but that's outside my area\u2014I'm here to help you find beautiful Nordic objects for your home, like lighting, candles, prints, mirrors, vases, and wall art.\n\nIs there anything from Nordic Shop I can help you discover today?",
     "tool_score": 10,
     "groundedness_score": 10,
-    "model_score": 9,
-    "model_reasoning": "The reply correctly declines without tool use and refocuses on home decor shopping.",
-    "final_score": 9.7
+    "model_score": 10,
+    "model_reasoning": "Meets criteria fully with no tool call, polite decline, and refocus.",
+    "final_score": 10.0
   }
 ]

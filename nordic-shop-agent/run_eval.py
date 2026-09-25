@@ -10,7 +10,9 @@ def run_test_case(test_case: dict) -> dict:
 
     tool_score = grade_tool_call(test_case, result["last_turn_tool_calls"])
     groundedness_score = grade_groundedness(result["reply"], result["all_products_seen"])
-    model_grade = grade_by_model(test_case, test_case["conversation"], result["reply"])
+    model_grade = grade_by_model(
+        test_case, test_case["conversation"], result["reply"], result["last_turn_tool_calls"]
+    )
 
     # Equal weight across the three signals. Adjust if one matters more to you —
     # e.g. weight groundedness higher since hallucination is the costliest failure.
