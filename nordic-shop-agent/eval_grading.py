@@ -27,28 +27,51 @@ def grade_tool_call(test_case: dict, last_turn_tool_calls: list) -> float:
     return 10 if expected_name in called_names else 0
 
 
+def _get_text(response) -> str:
+    """Extracts the text block from a response, ignoring any ThinkingBlock
+    that may come first — claude-sonnet-5 has adaptive thinking on by default
+    and can return thinking content before the actual text, so content[0]
+    isn't safely the answer."""
+    for block in response.content:
+        if block.type == "text":
+            return block.text
+    return ""
+
+
+def _parse_json_loose(text: str):
+    """Strips a ```json ... ``` fence if the model added one anyway, then parses.
+    Claude Sonnet 4.6+ don't support assistant message prefill, so we can't force
+    the fence open the way earlier course examples do — instead we just ask for
+    plain JSON and clean up defensively before parsing."""
+    text = text.strip()
+    if text.startswith("```"):
+        text = text.split("```")[1]
+        if text.startswith("json"):
+            text = text[4:]
+    return json.loads(text.strip())
+
+
 def _extract_mentioned_products(reply: str) -> list[str]:
-    """Uses Claude (prefill + stop_sequences) to pull out product names
-    mentioned in the reply, as clean JSON."""
+    """Uses Claude to pull out product names mentioned in the reply, as clean JSON.
+    No assistant prefill (unsupported on Sonnet 4.6+) — instruction-only instead."""
     prompt = f"""
 Extract every specific product name mentioned in this text. Return only real product names,
 not generic category words like "lamps" or "candles".
 
 Text:
 {reply}
+
+Respond with ONLY a JSON array of strings, no markdown fences, no explanation.
+Example: ["Bjorn Table Lamp", "Sven Desk Lamp"]
 """
-    messages = [
-        {"role": "user", "content": prompt},
-        {"role": "assistant", "content": "```json"},
-    ]
+    messages = [{"role": "user", "content": prompt}]
     response = client.messages.create(
         model=grader_model,
         max_tokens=300,
         messages=messages,
-        stop_sequences=["```"],
     )
     try:
-        return json.loads(response.content[0].text.strip())
+        return _parse_json_loose(_get_text(response))
     except json.JSONDecodeError:
         return []
 
@@ -96,16 +119,12 @@ Return ONLY valid JSON:
 Rules:
 - score: number from 1 to 10
 - maximum 2 strengths, maximum 2 weaknesses
-- no explanation outside the JSON
+- Respond with ONLY the JSON object, no markdown fences, no explanation outside the JSON
 """
-    messages = [
-        {"role": "user", "content": eval_prompt},
-        {"role": "assistant", "content": "```json"},
-    ]
+    messages = [{"role": "user", "content": eval_prompt}]
     response = client.messages.create(
         model=grader_model,
         max_tokens=400,
         messages=messages,
-        stop_sequences=["```"],
     )
-    return json.loads(response.content[0].text.strip())
+    return _parse_json_loose(_get_text(response))

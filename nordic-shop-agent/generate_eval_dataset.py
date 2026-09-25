@@ -62,7 +62,7 @@ def generate_dataset(output_file="dataset.json"):
         max_tokens=4000,
         messages=messages,
     )
-    text = response.content[0].text
+    text = next(block.text for block in response.content if block.type == "text")
 
     # Strip a leading/trailing ```json fence if Claude added one anyway
     text = text.strip()
