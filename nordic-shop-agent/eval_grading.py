@@ -55,14 +55,23 @@ def _extract_mentioned_products(reply: str) -> list[str]:
     """Uses Claude to pull out product names mentioned in the reply, as clean JSON.
     No assistant prefill (unsupported on Sonnet 4.6+) — instruction-only instead."""
     prompt = f"""
-Extract every specific product name mentioned in this text. Return only real product names,
-not generic category words like "lamps" or "candles".
+Extract every specific product name mentioned in this text. A product name is a specific,
+named item from a home decor catalog (e.g. "Bjorn Table Lamp", "Sigrid Pendant Light").
+
+Do NOT include:
+- Generic category words ("lamps", "candles", "mirrors")
+- The store's own name ("Nordic Shop")
+- External websites, services, or brands unrelated to the catalog (e.g. "weather.com")
+- Anything that isn't a specific product being offered for sale
+
+If the text makes no specific product claims at all, return an empty array.
 
 Text:
 {reply}
 
 Respond with ONLY a JSON array of strings, no markdown fences, no explanation.
 Example: ["Bjorn Table Lamp", "Sven Desk Lamp"]
+Example for no products mentioned: []
 """
     messages = [{"role": "user", "content": prompt}]
     response = client.messages.create(
