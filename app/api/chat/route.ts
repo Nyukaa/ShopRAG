@@ -5,7 +5,7 @@ export async function POST(request: Request) {
     const { message, sessionId } = await request.json();
 
     // Отправляем запрос в ваш существующий FastAPI микросервис
-    const response = await fetch("http://127.0.0", {
+    const response = await fetch("http://127.0.0.1:8000/chat", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
