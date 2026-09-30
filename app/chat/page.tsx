@@ -1,6 +1,6 @@
 "use client";
 
-import { createElement as h, useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 
 type Message = {
   id: string;

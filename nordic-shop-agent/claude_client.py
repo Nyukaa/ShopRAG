@@ -32,7 +32,7 @@ CRITICAL INSTRUCTIONS FOR TOOL USAGE:
    specific product, even if a stock number already appeared earlier in this conversation from
    a search_products result — inventory can change between calls, so a fresh check is required
    whenever availability itself is the question being asked.
-
+5.If the tool returns an empty array, honestly say that there are no such products and suggest searching for another category and adding it to the system prompt.
 EXAMPLES OF CORRECT TOOL USE:
 
 Example 1 — even confident category rejections need a search first:
