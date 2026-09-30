@@ -3,17 +3,17 @@ from config import NORDIC_API_URL
 
 async def search_products(query: str):
     async with httpx.AsyncClient() as client:
-        r = await client.get(f"{NORDIC_API_URL}/api/search", params={"q": query})
+        r = await client.get(f"{NORDIC_API_URL}/api/search", params={"q": query}, timeout=30.0)
         return r.json()
 
 async def get_product(product_id: str):
     async with httpx.AsyncClient() as client:
-        r = await client.get(f"{NORDIC_API_URL}/api/products/{product_id}")
+        r = await client.get(f"{NORDIC_API_URL}/api/products/{product_id}", timeout=30.0)
         return r.json()
 
 async def recommend_products(product_id: str):
     async with httpx.AsyncClient() as client:
-        r = await client.get(f"{NORDIC_API_URL}/api/similar/{product_id}")
+        r = await client.get(f"{NORDIC_API_URL}/api/similar/{product_id}", timeout=30.0)
         return r.json()
 
 async def check_availability(product_id: str):
