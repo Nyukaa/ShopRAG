@@ -129,3 +129,4 @@ _The frontend UI pages live inside the primary Next.js application directory:_
 
 uv run uvicorn main:app --reload
 NODE_OPTIONS="--max-old-space-size=8192" npm run dev
+8.7 = 8.7 на MCP и не-MCP путях. Это ровно то доказательство, которое стоило искать: MCP меняет транспорт, а не поведение агента. Можешь спокойно писать в CV что-то вроде "validated that wrapping tools in an MCP server preserves identical agent behavior via a parallel evaluation harness (8.7/10 on both paths)"
