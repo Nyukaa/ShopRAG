@@ -1,0 +1,87 @@
+[
+  {
+    "id": "simple_search_lamps_1",
+    "conversation": [
+      "Do you have any Nordic lamps available?"
+    ],
+    "expect_tool_call_on_last_turn": true,
+    "expected_tool_name": "search_products",
+    "solution_criteria": "Must call search_products with 'lamps' or similar query and present results accurately"
+  },
+  {
+    "id": "simple_search_candles_1",
+    "conversation": [
+      "I'm looking for scented candles"
+    ],
+    "expect_tool_call_on_last_turn": true,
+    "expected_tool_name": "search_products",
+    "solution_criteria": "Must call search_products and only mention candles that match the query"
+  },
+  {
+    "id": "simple_search_mirrors_1",
+    "conversation": [
+      "Do you sell mirrors?"
+    ],
+    "expect_tool_call_on_last_turn": true,
+    "expected_tool_name": "search_products",
+    "solution_criteria": "Must call search_products for mirrors and accurately describe available options"
+  },
+  {
+    "id": "simple_search_wall_art_1",
+    "conversation": [
+      "Show me your wall art collection"
+    ],
+    "expect_tool_call_on_last_turn": true,
+    "expected_tool_name": "search_products",
+    "solution_criteria": "Must call search_products and present wall art products found in the catalog"
+  },
+  {
+    "id": "context_reuse_color_question",
+    "conversation": [
+      "Do you have any white vases?",
+      "What about the dimensions of that vase?"
+    ],
+    "expect_tool_call_on_last_turn": false,
+    "expected_tool_name": null,
+    "solution_criteria": "Must reference the previously discussed vase without making a new search; provide dimension info based on context"
+  },
+  {
+    "id": "context_reuse_price_question",
+    "conversation": [
+      "I'm interested in pendant lamps",
+      "Is that the most expensive option you have?"
+    ],
+    "expect_tool_call_on_last_turn": false,
+    "expected_tool_name": null,
+    "solution_criteria": "Must answer about the previously mentioned pendant lamps without a new tool call; compare to context"
+  },
+  {
+    "id": "nonexistent_product_request_4",
+    "conversation": [
+      "I need outdoor garden lanterns"
+    ],
+    "expect_tool_call_on_last_turn": true,
+    "expected_tool_name": "search_products",
+    "solution_criteria": "Must search for garden lanterns; must not invent products if they're not in the home decor catalog"
+  },
+  {
+    "id": "availability_check_specific",
+    "conversation": [
+      "Show me white candles",
+      "How many of those do you have in stock?"
+    ],
+    "expect_tool_call_on_last_turn": true,
+    "expected_tool_name": "check_availability",
+    "solution_criteria": "Must call check_availability for the previously mentioned candle product and report actual stock quantity"
+  },
+  {
+    "id": "availability_check_multiple",
+    "conversation": [
+      "What vases do you have?",
+      "Are these vases in stock?"
+    ],
+    "expect_tool_call_on_last_turn": true,
+    "expected_tool_name": "check_availability",
+    "solution_criteria": "Must call check_availability for the vase product(s) and report real inventory numbers"
+  }
+]
