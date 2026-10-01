@@ -3,6 +3,7 @@ import json
 from anthropic import AsyncAnthropic
 
 from config import ANTHROPIC_API_KEY
+from router import classify_scope, history_to_text, OUT_OF_SCOPE_REPLY
 from tools import (
     TOOLS_SCHEMA,
     search_products,
@@ -32,7 +33,6 @@ CRITICAL INSTRUCTIONS FOR TOOL USAGE:
    specific product, even if a stock number already appeared earlier in this conversation from
    a search_products result — inventory can change between calls, so a fresh check is required
    whenever availability itself is the question being asked.
-5. If the tool returns an empty array, honestly say that there are no such products and suggest searching for another.
 
 EXAMPLES OF CORRECT TOOL USE:
 
@@ -107,7 +107,19 @@ async def execute_tool(name: str, tool_input: dict):
 
 async def handle_chat(session_id: str, user_message: str) -> str:
     history = get_history(session_id)
+
+    # Routing workflow: a cheap classification call decides whether this message
+    # deserves the full tool-calling loop at all, before any tool schema is sent
+    # or any tool gets a chance to run. Classified against the existing history
+    # so a legitimate follow-up ("how many of those?") isn't misread as off-topic
+    # just because it has no product name in it.
+    scope = await classify_scope(user_message, history_to_text(history))
+
     add_user_message(history, user_message)
+
+    if scope == "out_of_scope":
+        history.append({"role": "assistant", "content": [{"type": "text", "text": OUT_OF_SCOPE_REPLY}]})
+        return OUT_OF_SCOPE_REPLY
 
     while True:
         response = await client.messages.create(

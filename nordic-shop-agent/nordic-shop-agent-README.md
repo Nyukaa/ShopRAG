@@ -371,3 +371,6 @@ For persistent conversations, the session ID can later be stored in `localStorag
 - Improve observability and structured logging
 - Add more product and shopping tools
 - Expand the evaluation dataset with edge cases and multi-turn conversations
+
+uv run uvicorn main:app --reload
+NODE_OPTIONS="--max-old-space-size=8192" npm run dev

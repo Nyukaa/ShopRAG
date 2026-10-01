@@ -9,6 +9,7 @@ from mcp_client import MCPClient
 # Reuse the exact same system prompt as the eval agent, so any behavior
 # difference between the two versions comes from the tool plumbing, not the prompt.
 from instrumented_agent import SYSTEM_PROMPT
+from router import classify_scope, history_to_text, OUT_OF_SCOPE_REPLY
 
 client = AsyncAnthropic(api_key=ANTHROPIC_API_KEY)
 model = "claude-haiku-4-5-20251001"
@@ -21,7 +22,7 @@ def to_anthropic_tools(mcp_tools) -> list[dict]:
         {
             "name": t.name,
             "description": t.description or "",
-            "input_schema": t.input_schema,
+            "input_schema": t.input_schema,  # mcp 2.x attribute name
         }
         for t in mcp_tools
     ]
@@ -36,8 +37,16 @@ def tool_result_text(result) -> str:
 
 
 async def chat(mcp_client: MCPClient, history: list, user_message: str) -> str:
-    tools = to_anthropic_tools(await mcp_client.list_tools())
+    scope = await classify_scope(user_message, history_to_text(history))
     history.append({"role": "user", "content": user_message})
+
+    if scope == "out_of_scope":
+        history.append(
+            {"role": "assistant", "content": [{"type": "text", "text": OUT_OF_SCOPE_REPLY}]}
+        )
+        return OUT_OF_SCOPE_REPLY
+
+    tools = to_anthropic_tools(await mcp_client.list_tools())
 
     while True:
         response = await client.messages.create(
@@ -79,7 +88,7 @@ async def chat(mcp_client: MCPClient, history: list, user_message: str) -> str:
                     "type": "tool_result",
                     "tool_use_id": block.id,
                     "content": tool_result_text(result),
-                    "is_error": bool(result.is_error),
+                    "is_error": bool(result.is_error),  # mcp 2.x attribute name
                 }
             )
 

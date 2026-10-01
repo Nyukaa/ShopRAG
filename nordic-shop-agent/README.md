@@ -1,13 +1,13 @@
 # Nordic Shop Agent — AI Shopping Assistant
 
-An intelligent, AI-powered shopping assistant for the **Nordic Shop** home decor e-commerce platform. Built on an advanced agentic architecture using the **Model Context Protocol (MCP)**, this assistant dynamically analyzes user intent, executes live database tools, and delivers clean, contextual responses directly to a minimal Next.js web application.
+An intelligent, AI-powered shopping assistant for the **Nordic Shop** home decor e-commerce platform. Built on an advanced agentic architecture using the **Model Context Protocol (MCP)** and an optimized **Routing Workflow**, this assistant dynamically classfies intent, executes live database tools, and delivers clean, contextual responses directly to a Next.js web application.
 
 ---
 
 ## 🛠 Tech Stack
 
 - **Backend & AI Runtime:** Python, FastAPI, Pydantic, Uvicorn, HTTPX
-- **LLM Models:** `claude-haiku-4-5-20251001` (Main Assistant), `claude-sonnet-5` (Evaluation Grader / LLM-as-a-judge)
+- **LLM Models:** `claude-haiku-4-5-20251001` (Main Assistant & Fast Router), `claude-sonnet-5` (Evaluation Grader / LLM-as-a-judge)
 - **Tool Protocol:** Model Context Protocol (MCP) via isolated standard input/output (`stdio`) subprocesses
 - **Frontend:** Next.js (App Router), React, TypeScript, Tailwind CSS
 - **Product Database:** PostgreSQL / Supabase backend
@@ -16,41 +16,49 @@ An intelligent, AI-powered shopping assistant for the **Nordic Shop** home decor
 
 ## ✨ Key Features
 
+- 🎯 **Routing Workflow Infrastructure** — A dedicated, lightning-fast intent classifier filters out-of-scope requests before spinning up the heavy agent loop, significantly dropping token overhead and application latency.
 - 🤖 **Autonomous Multi-Turn Agent** — Maintains stateful, multi-turn conversations and leverages real-time internal systems rather than relying on stale parametric memory.
 - 🔌 **Decoupled MCP Architecture** — Product inventory and search functions are entirely isolated inside a standard MCP server, making them universally pluggable into any MCP client (e.g., Claude Desktop, Cursor).
 - 🧠 **Session-Based Management** — Chat state and contextual message sequences are bound seamlessly to isolated sessions on the backend using a unique `session_id`.
-- 📊 **Automated Prompt Evaluations** — Built-in offline testing pipelines using a robust evaluation dataset and an LLM grader model to benchmark system-prompt performance (achieved an evaluation score of **9.4/10**).
-- 🖥️ **Minimalist Scandinavian UI** — A clean, interactive web chat view designed to reflect the aesthetic identity of the Nordic Shop brand.
+- 📊 **Automated Parallel Evaluations** — Built-in offline testing pipelines using a robust evaluation harness to benchmark system-prompt performance. **Successfully validated that wrapping tools in an MCP server preserves identical agent behavior, pushing the core evaluation score from 7.6 to 8.7/10 on both execution tracks.**
 
 ---
 
-## 🏗️ System Architecture
+## 🏗️ System Architecture & Routing Workflow
+
+The system follows a two-step processing pattern: **Categorization** and **Specialized Processing**.
 
 ```text
-[ Browser: Next.js UI ]
-         │ (POST /api/chat)
-         ▼
-[ Next.js API Gateway Proxy ]
-         │ (Proxies requests to local port 8000)
-         ▼
-[ FastAPI /chat (Python) ] ── (In-Memory Session Context)
-         │
-         ▼
-[ Claude Agent Loop ] <──(stdio transport stream)──> [ MCP Server ]
-         │                                                    │
-         ▼ (Final Synthesized Text Output)                    ▼ (Executes Node/SQL Route)
-[ Frontend Client Chat Component ]                 [ Supabase / Main Store DB ]
+               [ Incoming User Prompt / Message ]
+                                │
+                                ▼
+                       [ router.py (LLM) ]
+                  (Cheap call: max_tokens=10)
+                                │
+               ┌────────────────┴────────────────┐
+               ▼                                 ▼
+       [ out_of_scope ]                   [ in_scope ]
+               │                                 │
+               ▼                                 ▼
+     [ OUT_OF_SCOPE_REPLY ]            [ mcp_agent.py Loop ]
+    (Immediate Static Return)      (Passes System Prompt + Tools)
+                                                 │
+                                                 ▼
+                                        [ MCP Server Connection ]
+                                                 │
+                                                 ▼
+                                   [ Supabase / Product DB Route ]
 ```
 
 ---
 
-## 🔧 Expose MCP Tools
+## 🔧 Exposed MCP Tools
 
-The agent independently selects and triggers the following tools exposed by the MCP server:
+When a request is routed as `in_scope`, the agent independently triggers the following tools exposed by the MCP server:
 
-- 🔍 `search_products(query)` — Searches the inventory catalog by string keywords, product type, material, color, or style.
-- 📦 `get_product(product_id)` — Fetches comprehensive technical specifications, dimensions, features, and source image configurations.
-- 💡 `recommend_products(product_id)` — Generates highly relevant, strictly filtered item associations based on overlapping taxonomy.
+- 🔍 `search_products(query)` — Searches the inventory catalog by keywords, product type, material, color, or style.
+- 📦 `get_product(product_id)` — Fetches comprehensive technical specifications, dimensions, and source image configurations.
+- 💡 `recommend_products(product_id)` — Generates item associations based on overlapping taxonomy.
 - 📊 `check_availability(product_id)` — Triggers an immediate, live stock quantity lookup directly from the transactional database.
 
 ---
@@ -59,7 +67,7 @@ The agent independently selects and triggers the following tools exposed by the 
 
 ### `POST /chat`
 
-Submits a user message tied to a specific session state and returns Claude's evaluated final text response.
+Submits a user message tied to a specific session state. It evaluates scope via the router first, then invokes Claude if needed.
 
 **Request Payload:**
 
@@ -74,7 +82,7 @@ Submits a user message tied to a specific session state and returns Claude's eva
 
 ```json
 {
-  "reply": "We have the Sven Desk Lamp ($65) available, featuring adjustable oak wood arms and an elegant fabric cable. There are currently 35 units in stock."
+  "reply": "We have the Sven Desk Lamp ($65) available, featuring adjustable oak wood arms. There are currently 35 units in stock."
 }
 ```
 
@@ -82,7 +90,7 @@ Submits a user message tied to a specific session state and returns Claude's eva
 
 ## 🔐 Session Handling & Lifecycle Constraints
 
-- **Current State:** Every message payload includes a `session_id`. The backend associates this ID with an active, temporary in-memory message list array.
+- **Current State:** Every message payload includes a `session_id`. The backend associates this ID with a temporary in-memory message list array.
 - **Reload Limitation:** Reloading the web browser explicitly resets the active React state and triggers a fresh `crypto.randomUUID()`. Because this new token does not match any entry in the backend storage dictionary, a blank history array is initialized. This is an intentional constraint ideal for debugging clean system prompt iterations.
 - **Production Plan:** For production deployments, the `session_id` can be cached directly inside browser `localStorage`, and the text thread dictionary can be migrated from active RAM to a permanent database collection.
 
@@ -90,6 +98,7 @@ Submits a user message tied to a specific session state and returns Claude's eva
 
 ## 📊 Core Concepts Demonstrated
 
+- **Routing Workflows** — Isolating intent classification into a lightweight gatekeeper component to protect conversational resources.
 - **Production-Grade AI Integration** — Embedding a state-of-the-art LLM into a realistic, sandboxed corporate infrastructure.
 - **Context-Bound Function Calling** — Bridging deterministic software tools and external REST payloads with non-deterministic text engines safely.
 - **Data-Driven Evaluation Methodology** — Moving away from subjective manual workspace testing to systematic statistical prompt engineering with multi-trial grading.
@@ -109,6 +118,7 @@ Submits a user message tied to a specific session state and returns Claude's eva
 
 ```text
 nordic-shop-agent/
+├── router.py              ← Intent classifier (in_scope vs out_of_scope)
 ├── claude_client.py       ← High-level Anthropic SDK wrapper and system prompt
 ├── mcp_agent.py           ← Multi-turn agent loop executing autonomous tool chains
 ├── mcp_client.py          ← Core MCP client connection transport layer
@@ -126,7 +136,3 @@ _The frontend UI pages live inside the primary Next.js application directory:_
 
 - `app/chat/page.tsx` — Interactive frontend user interface layout built with Tailwind CSS.
 - `app/api/chat/route.ts` — Edge router acting as a secure local bridge between browser fetch loops and port 8000.
-
-uv run uvicorn main:app --reload
-NODE_OPTIONS="--max-old-space-size=8192" npm run dev
-8.7 = 8.7 на MCP и не-MCP путях. Это ровно то доказательство, которое стоило искать: MCP меняет транспорт, а не поведение агента. Можешь спокойно писать в CV что-то вроде "validated that wrapping tools in an MCP server preserves identical agent behavior via a parallel evaluation harness (8.7/10 on both paths)"

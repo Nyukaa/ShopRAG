@@ -5,6 +5,7 @@ from anthropic import Anthropic
 from config import ANTHROPIC_API_KEY
 from mcp_client import MCPClient
 from instrumented_agent import SYSTEM_PROMPT  # same prompt, so only the tool plumbing differs
+from router import classify_scope_sync, history_to_text, OUT_OF_SCOPE_REPLY
 
 client = Anthropic(api_key=ANTHROPIC_API_KEY)
 model_under_test = "claude-haiku-4-5-20251001"  # same model as the local-tools baseline
@@ -65,8 +66,20 @@ async def run_conversation(conversation: list[str]) -> dict:
 
         for i, user_message in enumerate(conversation):
             is_last_turn = i == len(conversation) - 1
-            history.append({"role": "user", "content": user_message})
             turn_tool_calls = []
+
+            # Same routing workflow as production and the non-MCP eval path.
+            scope = classify_scope_sync(user_message, history_to_text(history))
+            history.append({"role": "user", "content": user_message})
+
+            if scope == "out_of_scope":
+                history.append(
+                    {"role": "assistant", "content": [{"type": "text", "text": OUT_OF_SCOPE_REPLY}]}
+                )
+                if is_last_turn:
+                    final_reply = OUT_OF_SCOPE_REPLY
+                    last_turn_tool_calls = []
+                continue
 
             while True:
                 response = client.messages.create(

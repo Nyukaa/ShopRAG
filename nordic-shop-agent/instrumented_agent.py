@@ -2,6 +2,7 @@ import json
 
 from anthropic import Anthropic
 from config import ANTHROPIC_API_KEY
+from router import classify_scope_sync, history_to_text, OUT_OF_SCOPE_REPLY
 from tools import (
     TOOLS_SCHEMA,
     search_products,
@@ -13,7 +14,7 @@ from tools import (
 client = Anthropic(api_key=ANTHROPIC_API_KEY)
 
 # Test against the model you actually plan to ship with the chatbot.
-# Swap to "claude-sonnet-5" to compare behavior against a stronger model.
+# Swap to "claude-sonnet-4-6" to compare behavior against a stronger model.
 model_under_test = "claude-haiku-4-5-20251001"
 
 SYSTEM_PROMPT = """You are a helpful and elegant shopping assistant for Nordic Shop.
@@ -94,8 +95,20 @@ def run_conversation(conversation: list[str]) -> dict:
 
     for i, user_message in enumerate(conversation):
         is_last_turn = i == len(conversation) - 1
-        history.append({"role": "user", "content": user_message})
         turn_tool_calls = []
+
+        # Same routing workflow as production: classify before touching tools.
+        scope = classify_scope_sync(user_message, history_to_text(history))
+        history.append({"role": "user", "content": user_message})
+
+        if scope == "out_of_scope":
+            history.append(
+                {"role": "assistant", "content": [{"type": "text", "text": OUT_OF_SCOPE_REPLY}]}
+            )
+            if is_last_turn:
+                final_reply = OUT_OF_SCOPE_REPLY
+                last_turn_tool_calls = []
+            continue
 
         while True:
             response = client.messages.create(
