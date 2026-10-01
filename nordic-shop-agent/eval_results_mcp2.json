@@ -1,0 +1,82 @@
+[
+  {
+    "id": "nonexistent_product_request_1",
+    "reply": "We don't carry furniture sets. Nordic Shop specializes in curated home d\u00e9cor and lighting for calm, modern living \u2014 things like **soft lighting, natural materials, prints, candles, wall art, mirrors, and vases**.\n\nHowever, I did find several beautiful Nordic pieces that could complement a bedroom or living space:\n\n- **Sigrid Pendant Light** \u2013 Handwoven rattan lamp with warm shadow patterns (\u00a3129)\n- **Arco Arch Mirror** \u2013 Full-length rattan-framed mirror, 160cm tall (\u00a3189)\n- **Woven Wall Hanging** \u2013 Hand-knotted macram\u00e9 in natural cotton and wool (\u00a379)\n- **Midnight Forest Print** \u2013 Moody landscape art available in A3 and A2 (\u00a335)\n\nIs there a particular room or style you're looking to decorate? I'd be happy to suggest something that suits your space.",
+    "tool_score": 10,
+    "groundedness_score": 10,
+    "model_score": 6,
+    "final_score": 8.7
+  },
+  {
+    "id": "nonexistent_product_request_2",
+    "reply": "I appreciate your interest, but the search results show that our current catalog doesn't include smart LED bulbs with WiFi control capabilities. We carry beautiful traditional lighting fixtures like desk lamps with warm white LEDs, but not smart home-connected bulbs.\n\nNordic Shop specializes in timeless Nordic design focused on calm, modern living\u2014featuring soft lighting, natural materials, prints, candles, wall art, mirrors, and vases. Our lighting pieces prioritize design and atmosphere over connectivity features.\n\nIf you're interested in elegant, well-designed lighting solutions without the smart home aspect, I'd be happy to show you what we have available. Would that interest you?",
+    "tool_score": 10,
+    "groundedness_score": 10,
+    "model_score": 8,
+    "final_score": 9.3
+  },
+  {
+    "id": "nonexistent_product_request_3",
+    "reply": "It looks like we don't currently have rugs or carpets in our Nordic Shop collection. We focus on timeless Nordic decor pieces such as soft lighting, candles, wall art, mirrors, vases, and other natural material objects designed for calm, modern living.\n\nHowever, if you're interested in complementary items that would work beautifully with a Nordic interior\u2014like pendant lights, wall prints, mirrors, or candles\u2014I'd be happy to help you explore those. What catches your eye?",
+    "tool_score": 10,
+    "groundedness_score": 10,
+    "model_score": 8,
+    "final_score": 9.3
+  },
+  {
+    "id": "nonexistent_product_request_4",
+    "reply": "As I suspected, we don't carry outdoor garden lanterns. Nordic Shop specializes in indoor decor for calm, modern living\u2014we focus on soft lighting, natural materials, prints, candles, wall art, mirrors, and vases designed for interior spaces.\n\nHowever, if you're interested in **indoor lighting** solutions\u2014like pendant lights, table lamps, or decorative candles that bring warmth and calm to your home\u2014I'd be happy to help you explore those options. Would that be of interest?",
+    "tool_score": 10,
+    "groundedness_score": 10,
+    "model_score": 8,
+    "final_score": 9.3
+  },
+  {
+    "id": "off_topic_weather",
+    "reply": "I'm here to help with Nordic Shop's home decor collection \u2014 lighting, candles, wall art, mirrors, and vases. Is there anything from our shop I can help you find?",
+    "tool_score": 10,
+    "groundedness_score": 10,
+    "model_score": 9,
+    "final_score": 9.7
+  },
+  {
+    "id": "off_topic_recipe",
+    "reply": "I'm here to help with Nordic Shop's home decor collection \u2014 lighting, candles, wall art, mirrors, and vases. Is there anything from our shop I can help you find?",
+    "tool_score": 10,
+    "groundedness_score": 10,
+    "model_score": 9,
+    "final_score": 9.7
+  },
+  {
+    "id": "off_topic_tech_support",
+    "reply": "I'm here to help with Nordic Shop's home decor collection \u2014 lighting, candles, wall art, mirrors, and vases. Is there anything from our shop I can help you find?",
+    "tool_score": 10,
+    "groundedness_score": 10,
+    "model_score": 9,
+    "final_score": 9.7
+  },
+  {
+    "id": "off_topic_sports",
+    "reply": "I'm here to help with Nordic Shop's home decor collection \u2014 lighting, candles, wall art, mirrors, and vases. Is there anything from our shop I can help you find?",
+    "tool_score": 10,
+    "groundedness_score": 10,
+    "model_score": 9,
+    "final_score": 9.7
+  },
+  {
+    "id": "simple_search_lamps_1",
+    "reply": "Yes, we do! We have two beautiful Nordic lamps available right now:\n\n1. **Sigrid Pendant Light** \u2014 \u20ac129\n   - Handwoven rattan pendant lamp in bohemian Nordic style\n   - Creates soft, warm shadow patterns\n   - Perfect for dining rooms\n   - 20 units in stock\n\n2. **Astrid Wall Sconce** \u2014 \u20ac75\n   - Brass wall-mounted sconce with white globe bulb\n   - Vintage Nordic aesthetic\n   - Beautiful warm accent for hallways or bedrooms\n   - 25 units in stock\n\nBoth pieces embody our Nordic philosophy of calm, timeless design with natural materials and soft lighting. Would you like more details about either of these, or would you like to see similar recommendations?",
+    "tool_score": 10,
+    "groundedness_score": 10,
+    "model_score": 7,
+    "final_score": 9.0
+  },
+  {
+    "id": "simple_search_candles_1",
+    "reply": "Great! I found some beautiful candles for you:\n\n**Nordic Pine Taper Set** \u2014 $19\nSet of six slim taper candles in dusty sage and off-white with a lovely **pine and eucalyptus scent**. Perfect for elegant dinner table styling. *(70 in stock)*\n\n**Unscented Beeswax Trio** \u2014 $24\nIf you prefer pure, clean burning candles without fragrance, this set of three natural beeswax pillars has a warm honey tone and rustic Nordic feel. *(55 in stock)*\n\nThe Nordic Pine Taper Set is our scented option with a fresh, woodsy Nordic fragrance. Would you like more details about either of these, or are you interested in exploring other options?",
+    "tool_score": 10,
+    "groundedness_score": 10,
+    "model_score": 4,
+    "final_score": 8.0
+  }
+]

@@ -22,10 +22,20 @@ ROUTING_PROMPT = """You are a strict binary classifier for Nordic Shop's chat as
 Nordic Shop sells home decor: lamps, candles, vases, mirrors, wall art, and prints.
 
 Classify the user's message as exactly one of:
-- in_scope: anything about the shop's products, prices, stock/availability, recommendations,
-  or a reasonable follow-up about something already discussed in this conversation
-- out_of_scope: anything unrelated to the shop (weather, recipes, tech support, sports, general
-  chit-chat, or asking the assistant to do something it has no connection to)
+- in_scope: ANY shopping question directed at the store — including asking whether the store
+  carries a product it does NOT actually stock. "Not something we sell" is a valid, in_scope
+  answer to give; it does not make the QUESTION out of scope. Also includes reasonable
+  follow-ups about something already discussed in this conversation.
+- out_of_scope: the message has nothing to do with shopping at this store at all — general
+  knowledge questions, weather, recipes, tech support, sports, personal chit-chat, or asking the
+  assistant to do something entirely unrelated to buying home decor.
+
+CRITICAL DISTINCTION — do not confuse "we don't sell that" with "out of scope":
+- "Do you have smart LED bulbs with WiFi?" -> in_scope (it's a shopping question; the honest
+  answer may be "no", but answering that requires checking the catalog first)
+- "Do you sell garden furniture?" -> in_scope (same reasoning — still a shopping question)
+- "What's the weather like today?" -> out_of_scope (nothing to do with shopping here)
+- "Give me a recipe for meatballs" -> out_of_scope (unrelated task, not a shopping question)
 
 Conversation so far:
 {history}
