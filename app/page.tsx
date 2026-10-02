@@ -11,6 +11,7 @@ import {
   type Product,
 } from "@/lib/features/products/productSlice";
 import { useSearchParams } from "next/navigation";
+import ChatWidget from "./components/ChatWidget";
 
 // ── Debounce hook ──────────────────────────────────────────────
 function useDebounce<T>(value: T, delay: number): T {
@@ -33,7 +34,7 @@ function Home() {
   const debouncedQuery = useDebounce(query, 350); // Debounce user input for better UX and fewer API calls
   //const [activeCategory, setActiveCategory] = useState<string>("All");
   const [activeCategory, setActiveCategory] = useState<string>(
-    searchParams.get("category") ?? "All"
+    searchParams.get("category") ?? "All",
   );
   const [searchMode, setSearchMode] = useState<"simple" | "rag">("simple");
   const [mounted, setMounted] = useState(false);
@@ -59,7 +60,7 @@ function Home() {
   const filteredItems = (() => {
     const base = isSearching
       ? searchMode === "rag"
-        ? ragResults ?? []
+        ? (ragResults ?? [])
         : simpleResults
       : items;
 
@@ -356,6 +357,7 @@ function Home() {
             </div>
           )}
       </section>
+      <ChatWidget />
     </main>
   );
 }

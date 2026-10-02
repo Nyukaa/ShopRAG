@@ -12,6 +12,7 @@ export async function POST(request: Request) {
       },
       body: JSON.stringify({
         session_id: sessionId || "default-session", // Use a default session ID if none is provided
+        message: message,
       }),
     });
 
@@ -26,7 +27,7 @@ export async function POST(request: Request) {
     const data = await response.json(); // Get { reply: "..." }
     return NextResponse.json(data);
   } catch (error: unknown) {
-    console.error("Ошибка в Next.js API:", error);
+    console.error("Error in Next.js API:", error);
     return NextResponse.json(
       { error: "Cannot connect to the AI service" },
       { status: 500 },
