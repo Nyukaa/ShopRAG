@@ -1,6 +1,6 @@
 # Nordic Shop Agent — AI Shopping Assistant
 
-An intelligent, AI-powered shopping assistant for the **Nordic Shop** home decor e-commerce platform. Built on an advanced agentic architecture using the **Model Context Protocol (MCP)** and an optimized **Routing Workflow**, this assistant dynamically classfies intent, executes live database tools, and delivers clean, contextual responses directly to a Next.js web application.
+An intelligent, AI-powered shopping assistant for the **Nordic Shop** home decor e-commerce platform. Built on an advanced agentic architecture using an optimized **Routing Workflow**, this assistant dynamically classifies intent, executes live database tools, and delivers clean, contextual responses directly to a Next.js web application.
 
 ---
 
@@ -8,7 +8,7 @@ An intelligent, AI-powered shopping assistant for the **Nordic Shop** home decor
 
 - **Backend & AI Runtime:** Python, FastAPI, Pydantic, Uvicorn, HTTPX
 - **LLM Models:** `claude-haiku-4-5-20251001` (Main Assistant & Fast Router), `claude-sonnet-5` (Evaluation Grader / LLM-as-a-judge)
-- **Tool Protocol:** Model Context Protocol (MCP) via isolated standard input/output (`stdio`) subprocesses
+- **Tool Protocol:** Direct local function execution (Production) & Model Context Protocol (MCP via isolated standard input/output `stdio` subprocesses for behavioral evaluation)
 - **Frontend:** Next.js (App Router), React, TypeScript, Tailwind CSS
 - **Product Database:** PostgreSQL / Supabase backend
 
@@ -18,15 +18,15 @@ An intelligent, AI-powered shopping assistant for the **Nordic Shop** home decor
 
 - 🎯 **Routing Workflow Infrastructure** — A dedicated, lightning-fast intent classifier filters out-of-scope requests before spinning up the heavy agent loop, significantly dropping token overhead and application latency.
 - 🤖 **Autonomous Multi-Turn Agent** — Maintains stateful, multi-turn conversations and leverages real-time internal systems rather than relying on stale parametric memory.
-- 🔌 **Decoupled MCP Architecture** — Product inventory and search functions are entirely isolated inside a standard MCP server, making them universally pluggable into any MCP client (e.g., Claude Desktop, Cursor).
+- 🔌 **Parallel MCP Evaluation Track** — Product inventory and search functions were isolated inside a standard MCP server to evaluate decoupled agent architectures. **Successfully validated that wrapping tools in an MCP server preserves identical agent behavior, pushing the core evaluation score from 7.8 to 8.7/10 on both tracks.**
 - 🧠 **Session-Based Management** — Chat state and contextual message sequences are bound seamlessly to isolated sessions on the backend using a unique `session_id`.
-- 📊 **Automated Parallel Evaluations** — Built-in offline testing pipelines using a robust evaluation harness to benchmark system-prompt performance. **Successfully validated that wrapping tools in an MCP server preserves identical agent behavior, pushing the core evaluation score from 7.6 to 8.7/10 on both execution tracks.**
+- 📊 **Automated System Prompt Evaluations** — Built-in offline testing pipelines using a robust evaluation harness to benchmark system-prompt performance.
 
 ---
 
 ## 🏗️ System Architecture & Routing Workflow
 
-The system follows a two-step processing pattern: **Categorization** and **Specialized Processing**.
+The production pipeline utilizes a modular two-step processing pattern: **Categorization** and **Specialized Processing**.
 
 ```text
                [ Incoming User Prompt / Message ]
@@ -40,21 +40,23 @@ The system follows a two-step processing pattern: **Categorization** and **Speci
        [ out_of_scope ]                   [ in_scope ]
                │                                 │
                ▼                                 ▼
-     [ OUT_OF_SCOPE_REPLY ]            [ mcp_agent.py Loop ]
-    (Immediate Static Return)      (Passes System Prompt + Tools)
-                                                 │
-                                                 ▼
-                                        [ MCP Server Connection ]
+     [ OUT_OF_SCOPE_REPLY ]           [ claude_client.py /chat ]
+    (Immediate Static Return)      (Direct Local Function Tool Calling)
                                                  │
                                                  ▼
                                    [ Supabase / Product DB Route ]
+
+─────────────────────────────────────────────────────────────────────────────────
+[ PARALLEL EVALUATION HARNESS: VALIDATING MODEL CONTEXT PROTOCOL (MCP) PARITY ]
+
+  User Input ──► [ router.py ] ──► [ mcp_agent.py CLI Loop ] ──► [ MCP Server ] ──► DB
 ```
 
 ---
 
-## 🔧 Exposed MCP Tools
+## 🔧 Exposed Tools & Capabilities
 
-When a request is routed as `in_scope`, the agent independently triggers the following tools exposed by the MCP server:
+When a request is routed as `in_scope`, the agent independently triggers the following core catalog capabilities:
 
 - 🔍 `search_products(query)` — Searches the inventory catalog by keywords, product type, material, color, or style.
 - 📦 `get_product(product_id)` — Fetches comprehensive technical specifications, dimensions, and source image configurations.
@@ -100,7 +102,7 @@ Submits a user message tied to a specific session state. It evaluates scope via 
 
 - **Routing Workflows** — Isolating intent classification into a lightweight gatekeeper component to protect conversational resources.
 - **Production-Grade AI Integration** — Embedding a state-of-the-art LLM into a realistic, sandboxed corporate infrastructure.
-- **Context-Bound Function Calling** — Bridging deterministic software tools and external REST payloads with non-deterministic text engines safely.
+- **Architectural Parity Testing** — Proving that wrapping local production tools in an decoupled network environment (MCP) preserves exact functional parity (8.7/10 score match).
 - **Data-Driven Evaluation Methodology** — Moving away from subjective manual workspace testing to systematic statistical prompt engineering with multi-trial grading.
 
 ---
@@ -119,12 +121,13 @@ Submits a user message tied to a specific session state. It evaluates scope via 
 ```text
 nordic-shop-agent/
 ├── router.py              ← Intent classifier (in_scope vs out_of_scope)
-├── claude_client.py       ← High-level Anthropic SDK wrapper and system prompt
-├── mcp_agent.py           ← Multi-turn agent loop executing autonomous tool chains
+├── claude_client.py       ← High-level Anthropic SDK wrapper and direct tool routing (Production entrypoint)
+├── main.py                ← Main asynchronous FastAPI service entry point (Port 8000)
+├── tools.py               ← Low-level network endpoints parsing live application data
+│
+├── mcp_agent.py           ← Multi-turn agent CLI loop executing autonomous MCP tool chains
 ├── mcp_client.py          ← Core MCP client connection transport layer
 ├── mcp_server.py          ← Core MCP server establishing available tool schemas
-├── tools.py               ← Low-level network endpoints parsing live application data
-├── main.py                ← Main asynchronous FastAPI service entry point
 │
 ├── dataset.json           ← Standard evaluation scenarios for offline testing
 ├── run_eval_mcp.py        ← Batch test loop processing data criteria trials
