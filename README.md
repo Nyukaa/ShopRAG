@@ -52,6 +52,14 @@ A full-stack e-commerce app for a Nordic home decor store with a custom-built RA
 
 ---
 
+## 🤖 AI Shopping Assistant
+
+The Nordic Shop project also includes a separate AI shopping assistant built with Claude and MCP.
+
+The agent can search products, retrieve product details, generate recommendations, and check availability using dedicated tools. It maintains conversation context and is evaluated with an automated grading pipeline.
+
+## **→ [Nordic Shop Agent — AI Assistant](https://github.com/Nyukaa/ShopRAG/tree/main/nordic-shop-agent)**
+
 ## 📸 Screenshots / App Preview / [🌐 Live Demo](https://nordic-shop-ebon.vercel.app/)
 
 | Main Page                                                                           | Product Details                                                             | Admin Dashboard                                                          | New Product                                                                     | Shopping Cart                                                         |
