@@ -22,7 +22,11 @@ An intelligent, AI-powered shopping assistant for the **Nordic Shop** home decor
 - 🧠 **Session-Based Management** — Chat state and contextual message sequences are bound seamlessly to isolated sessions on the backend using a unique `session_id`.
 - 📊 **Automated System Prompt Evaluations** — Built-in offline testing pipelines using a robust evaluation harness to benchmark system-prompt performance.
 
----
+## 📸 Screenshots
+
+|                         Screen 1                         |                         Screen 2                         |
+| :------------------------------------------------------: | :------------------------------------------------------: |
+| <img src="../screen/chat0.png" alt="chat1" width="350"/> | <img src="../screen/chat1.png" alt="chat2" width="350"/> |
 
 ## 🏗️ System Architecture & Routing Workflow
 
