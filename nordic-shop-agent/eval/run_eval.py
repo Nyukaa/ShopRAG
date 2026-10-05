@@ -8,6 +8,11 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from instrumented_agent import run_conversation
 from eval_grading import grade_tool_call, grade_groundedness, grade_by_model
 
+EVAL_DIR = Path(__file__).parent
+DATA_DIR = EVAL_DIR / "data"
+RESULTS_DIR = EVAL_DIR / "results"
+RESULTS_DIR.mkdir(exist_ok=True)
+
 
 def run_test_case(test_case: dict, n_trials: int = 1) -> dict:
     """Runs a test case n_trials times and averages the scores. Haiku's tool-call
@@ -49,7 +54,11 @@ def run_test_case(test_case: dict, n_trials: int = 1) -> dict:
     }
 
 
-def run_eval(dataset_file="data/dataset.json", n_trials: int = 1):
+def run_eval(dataset_file=None, n_trials: int = 1):
+    if dataset_file is None:
+        dataset_file = DATA_DIR / "dataset.json"
+    else:
+        dataset_file = Path(dataset_file)
     with open(dataset_file) as f:
         dataset = json.load(f)
 
@@ -77,7 +86,7 @@ def run_eval(dataset_file="data/dataset.json", n_trials: int = 1):
     print(f"Average model score:        {avg_model:.1f}")
     print(f"Average FINAL score:        {avg:.1f}")
 
-    with open("results/eval_results.json", "w") as f:
+    with open(RESULTS_DIR / "eval_results.json", "w") as f:
         json.dump(results, f, indent=2)
 
     return results

@@ -1,4 +1,8 @@
 import json
+from pathlib import Path
+
+EVAL_DIR = Path(__file__).parent
+DATA_DIR = EVAL_DIR / "data"
 
 # Список 9 кейсов, которые вам необходимо выбрать
 selected_ids = {
@@ -14,7 +18,7 @@ selected_ids = {
 }
 
 # Загружаем ваш исходный полный датасет
-with open("data/dataset.json", "r", encoding="utf-8") as f:
+with open(DATA_DIR / "dataset.json", "r", encoding="utf-8") as f:
     full_dataset = json.load(f)
 
 # Если структура датасета — это прямой массив объектов:
@@ -27,7 +31,7 @@ else:
     filtered_cases = []
 
 # Сохраняем выбранные 9 кейсов в новый файл
-with open("data/dataset_selected.json", "w", encoding="utf-8") as f:
+with open(DATA_DIR / "dataset_selected.json", "w", encoding="utf-8") as f:
     json.dump(filtered_cases, f, indent=2, ensure_ascii=False)
 
 print(f"Успешно выбрано {len(filtered_cases)} из 9 кейсов и сохранено в dataset_selected.json")

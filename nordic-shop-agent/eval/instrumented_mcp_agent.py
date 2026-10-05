@@ -13,6 +13,9 @@ from router import classify_scope_sync, history_to_text, OUT_OF_SCOPE_REPLY
 client = Anthropic(api_key=ANTHROPIC_API_KEY)
 model_under_test = "claude-haiku-4-5-20251001"  # same model as the local-tools baseline
 
+PARENT_DIR = Path(__file__).parent.parent
+MCP_SERVER_PATH = str(PARENT_DIR / "mcp_server.py")
+
 
 def to_anthropic_tools(mcp_tools) -> list[dict]:
     return [
@@ -58,7 +61,7 @@ async def run_conversation(conversation: list[str]) -> dict:
     conversation, returns the final reply, the tool calls made on the LAST
     turn, and every product name seen across the WHOLE conversation. The only
     difference is tools are listed/executed via the MCP server subprocess."""
-    async with MCPClient(command=sys.executable, args=["mcp_server.py"]) as mcp:
+    async with MCPClient(command=sys.executable, args=[MCP_SERVER_PATH]) as mcp:
         mcp_tools = await mcp.list_tools()
         anthropic_tools = to_anthropic_tools(mcp_tools)
 
