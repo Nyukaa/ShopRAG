@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 
-# Загружаем .env из текущей папки агента
+# Load .env from the current agent folder
 load_dotenv()
 
 NORDIC_API_URL = os.getenv("NORDIC_API_URL", "http://localhost:3000").rstrip("/")
