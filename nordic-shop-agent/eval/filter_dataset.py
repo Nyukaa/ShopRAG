@@ -4,7 +4,7 @@ from pathlib import Path
 EVAL_DIR = Path(__file__).parent
 DATA_DIR = EVAL_DIR / "data"
 
-# Список 9 кейсов, которые вам необходимо выбрать
+# List of 9 test cases that you need to select
 selected_ids = {
     "nonexistent_product_request_4",
     "context_reuse_color_question",
@@ -17,21 +17,21 @@ selected_ids = {
     "availability_check_multiple"
 }
 
-# Загружаем ваш исходный полный датасет
+# Load your original full dataset
 with open(DATA_DIR / "dataset.json", "r", encoding="utf-8") as f:
     full_dataset = json.load(f)
 
-# Если структура датасета — это прямой массив объектов:
+# If the dataset structure is a direct array of objects:
 if isinstance(full_dataset, list):
     filtered_cases = [case for case in full_dataset if case.get("id") in selected_ids]
-# Если датасет обернут в объект (например, {"test_cases": [...]})
+# If the dataset is wrapped in an object (e.g., {"test_cases": [...]})
 elif isinstance(full_dataset, dict) and "test_cases" in full_dataset:
     filtered_cases = [case for case in full_dataset["test_cases"] if case.get("id") in selected_ids]
 else:
     filtered_cases = []
 
-# Сохраняем выбранные 9 кейсов в новый файл
+# Save the selected 9 test cases to a new file
 with open(DATA_DIR / "dataset_selected.json", "w", encoding="utf-8") as f:
     json.dump(filtered_cases, f, indent=2, ensure_ascii=False)
 
-print(f"Успешно выбрано {len(filtered_cases)} из 9 кейсов и сохранено в dataset_selected.json")
+print(f"Successfully selected {len(filtered_cases)} out of 9 test cases and saved to dataset_selected.json")
