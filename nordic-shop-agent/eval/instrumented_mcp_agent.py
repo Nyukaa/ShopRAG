@@ -1,5 +1,8 @@
 import sys
 import json
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from anthropic import Anthropic
 from config import ANTHROPIC_API_KEY

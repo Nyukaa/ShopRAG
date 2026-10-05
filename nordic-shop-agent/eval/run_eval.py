@@ -1,5 +1,9 @@
 import json
+import sys
+from pathlib import Path
 from statistics import mean
+
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from instrumented_agent import run_conversation
 from eval_grading import grade_tool_call, grade_groundedness, grade_by_model
@@ -45,7 +49,7 @@ def run_test_case(test_case: dict, n_trials: int = 1) -> dict:
     }
 
 
-def run_eval(dataset_file="dataset.json", n_trials: int = 1):
+def run_eval(dataset_file="data/dataset.json", n_trials: int = 1):
     with open(dataset_file) as f:
         dataset = json.load(f)
 
@@ -73,7 +77,7 @@ def run_eval(dataset_file="dataset.json", n_trials: int = 1):
     print(f"Average model score:        {avg_model:.1f}")
     print(f"Average FINAL score:        {avg:.1f}")
 
-    with open("eval_results.json", "w") as f:
+    with open("results/eval_results.json", "w") as f:
         json.dump(results, f, indent=2)
 
     return results

@@ -1,4 +1,8 @@
 import json
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from anthropic import Anthropic
 from config import ANTHROPIC_API_KEY
@@ -55,7 +59,7 @@ Please generate 24 objects, 4 per scenario type listed above.
 """
 
 
-def generate_dataset(output_file="dataset.json"):
+def generate_dataset(output_file="data/dataset.json"):
     messages = [{"role": "user", "content": DATASET_PROMPT}]
     response = client.messages.create(
         model=model,
