@@ -8,7 +8,7 @@ from mcp_client import MCPClient
 
 # Reuse the exact same system prompt as the eval agent, so any behavior
 # difference between the two versions comes from the tool plumbing, not the prompt.
-from instrumented_agent import SYSTEM_PROMPT
+from prompts import SYSTEM_PROMPT
 from router import classify_scope, history_to_text, OUT_OF_SCOPE_REPLY
 
 client = AsyncAnthropic(api_key=ANTHROPIC_API_KEY)

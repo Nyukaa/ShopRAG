@@ -1,10 +1,18 @@
 import json
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from anthropic import Anthropic
 from config import ANTHROPIC_API_KEY
 
 client = Anthropic(api_key=ANTHROPIC_API_KEY)
 model = "claude-haiku-4-5-20251001"
+
+EVAL_DIR = Path(__file__).parent
+DATA_DIR = EVAL_DIR / "data"
+DATA_DIR.mkdir(exist_ok=True)
 
 DATASET_PROMPT = """
 Generate an evaluation dataset for testing an AI shopping assistant chatbot for "Nordic Shop",
@@ -55,7 +63,11 @@ Please generate 24 objects, 4 per scenario type listed above.
 """
 
 
-def generate_dataset(output_file="dataset.json"):
+def generate_dataset(output_file=None):
+    if output_file is None:
+        output_file = DATA_DIR / "dataset.json"
+    else:
+        output_file = Path(output_file)
     messages = [{"role": "user", "content": DATASET_PROMPT}]
     response = client.messages.create(
         model=model,

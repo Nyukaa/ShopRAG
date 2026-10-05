@@ -1,9 +1,18 @@
 import asyncio
 import json
+import sys
+from pathlib import Path
 from statistics import mean
+
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from instrumented_mcp_agent import run_conversation
 from eval_grading import grade_tool_call, grade_groundedness, grade_by_model
+
+EVAL_DIR = Path(__file__).parent
+DATA_DIR = EVAL_DIR / "data"
+RESULTS_DIR = EVAL_DIR / "results"
+RESULTS_DIR.mkdir(exist_ok=True)
 
 
 async def run_test_case(test_case: dict) -> dict:
@@ -26,7 +35,11 @@ async def run_test_case(test_case: dict) -> dict:
     }
 
 
-async def run_eval_mcp(dataset_file="dataset.json"):
+async def run_eval_mcp(dataset_file=None):
+    if dataset_file is None:
+        dataset_file = DATA_DIR / "dataset.json"
+    else:
+        dataset_file = Path(dataset_file)
     with open(dataset_file) as f:
         dataset = json.load(f)
 
@@ -51,7 +64,7 @@ async def run_eval_mcp(dataset_file="dataset.json"):
     print(f"Average model score:        {mean(r['model_score'] for r in results):.1f}")
     print(f"Average FINAL score:        {mean(r['final_score'] for r in results):.1f}")
 
-    with open("eval_results_mcp.json", "w") as f:
+    with open(RESULTS_DIR / "eval_results_mcp.json", "w") as f:
         json.dump(results, f, indent=2)
 
     return results

@@ -1,4 +1,8 @@
 import json
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from anthropic import Anthropic
 from config import ANTHROPIC_API_KEY
@@ -39,16 +43,16 @@ def _get_text(response) -> str:
 
 
 def _parse_json_loose(text: str):
-    """Strips a ```json ... ``` fence if the model added one anyway, then parses.
-    Claude Sonnet 4.6+ don't support assistant message prefill, so we can't force
-    the fence open the way earlier course examples do — instead we just ask for
-    plain JSON and clean up defensively before parsing."""
     text = text.strip()
     if text.startswith("```"):
         text = text.split("```")[1]
         if text.startswith("json"):
             text = text[4:]
-    return json.loads(text.strip())
+    starts = [i for i in (text.find("{"), text.find("[")) if i != -1]
+    if not starts:
+        raise json.JSONDecodeError("No JSON found in model output", text, 0)
+    obj, _ = json.JSONDecoder().raw_decode(text[min(starts):])
+    return obj
 
 
 def _extract_mentioned_products(reply: str) -> list[str]:
