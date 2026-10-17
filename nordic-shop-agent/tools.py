@@ -62,31 +62,3 @@ TOOLS_SCHEMA = [
         }
     }
 ]
-import asyncio
-from tools import search_products, get_product, recommend_products
-
-
-async def main():
-    print("=== search_products ===")
-    results = await search_products("Bjorn Table Lamp")
-    print(results)
-
-    if results:
-        product_id = results[0]["id"]
-
-        print("\n=== get_product ===")
-        product = await get_product(product_id)
-        print(product)
-
-        print("\n=== recommend_products ===")
-        similar = await recommend_products(product_id)
-        print(similar)
-
-        print("\n=== check_availability ===")
-        availability = await check_availability(product_id)
-        print(availability)
-
-
-
-if __name__ == "__main__":
-    asyncio.run(main())

@@ -1,3 +1,4 @@
+import argparse
 import json
 import sys
 from pathlib import Path
@@ -93,7 +94,12 @@ def run_eval(dataset_file=None, n_trials: int = 1):
 
 
 if __name__ == "__main__":
-    # Bump n_trials to 3-5 when you specifically need to distinguish a real
-    # behavioral change from ordinary model sampling variance (e.g. right after
-    # a prompt edit). Leave at 1 for quick day-to-day iteration.
-    run_eval(n_trials=1)
+    parser = argparse.ArgumentParser(description="Run evaluation on production agent track")
+    parser.add_argument(
+        "--trials",
+        type=int,
+        default=1,
+        help="Number of trials per test case (default: 1). Use 3-5 after prompt changes to measure variance."
+    )
+    args = parser.parse_args()
+    run_eval(n_trials=args.trials)
