@@ -2,257 +2,121 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
----
+## Project
 
-## Quick Start
+Nordic Shop Agent: an AI shopping assistant backend for a Next.js e-commerce platform.
 
-**Project:** Nordic Shop Agent — an AI-powered shopping assistant backend for a Next.js e-commerce platform.
+**Stack:** Python 3.11+, FastAPI, Anthropic Claude API, MCP (Model Context Protocol), `uv` for dependencies.
 
-**Tech Stack:** Python 3.11+, FastAPI, Anthropic Claude API, MCP (Model Context Protocol), PostgreSQL/Supabase.
+The agent has **no direct database access**. All product and stock data comes from the shop backend over HTTP (`NORDIC_API_URL`, default `http://localhost:3000`). Do not connect to PostgreSQL/Supabase from this repo.
 
-**Environment Setup:**
+## Setup
+
 ```bash
-# Set up Python 3.11 if not already active
-pyenv local 3.11  # if using pyenv
-
-# Install dependencies (using uv or pip)
-uv pip install -e .  # or: pip install -e .
-
-# Set ANTHROPIC_API_KEY in .env or environment
-export ANTHROPIC_API_KEY="your-key"
+uv pip install -e .
+# Put ANTHROPIC_API_KEY and NORDIC_API_URL in .env
 ```
 
----
+## Commands
 
-## Core Commands
+Always use `uv run python`, never bare `python`.
 
-**Run the production FastAPI server (Port 8000):**
 ```bash
-# Start development server
-uvicorn main:app --reload
+# Run API server (port 8000)
+uv run uvicorn main:app --reload
 
-# Query it (in another terminal)
+# Try it
 curl -X POST http://localhost:8000/chat \
   -H "Content-Type: application/json" \
   -d '{"session_id": "test-123", "message": "Do you have oak lamps?"}'
+
+# Eval, production track (add --trials 3 to measure variance)
+uv run python eval/run_eval.py
+uv run python eval/run_eval.py --trials 3
+
+# Eval, MCP track (starts the MCP server over stdio)
+uv run python eval/run_eval_mcp.py
+
+# Datasets
+uv run python eval/generate_eval_dataset.py
+uv run python eval/filter_dataset.py --size 5 --output eval/data/dataset_selected.json
 ```
 
-**Run offline evaluation harness (production agent track):**
-```bash
-# Single trial per test case (fast iteration)
-python eval/run_eval.py
+## Architecture
 
-# Multiple trials (n=3-5) to measure model variance after prompt edits
-python eval/run_eval.py --trials 3
-```
+Two tracks with the same agent logic:
 
-**Run MCP evaluation harness (decoupled architecture track):**
-```bash
-# Starts the MCP server, runs agent via stdio
-python eval/run_eval_mcp.py
-```
+1. **Production track** (`main.py` -> `router.py` -> `claude_client.py`)
+   - A cheap router (Haiku, max_tokens=10) classifies each message as `in_scope` or `out_of_scope`.
+   - `out_of_scope` -> static reply. `in_scope` -> multi-turn agent loop with tool calling.
+   - Tools are called as local Python functions.
+2. **MCP track** (`mcp_agent.py` -> `mcp_client.py` -> `mcp_server.py`)
+   - Same tools exposed through an MCP server over stdio.
+   - Goal is parity: both tracks should get the same eval scores.
 
-**Generate or filter evaluation datasets:**
-```bash
-# Create fresh dataset from scratch
-python eval/generate_eval_dataset.py
+Session state: message history is stored in memory, keyed by `session_id` (UUID from the Next.js frontend). A browser reload starts a new session. This is intentional for prompt iteration.
 
-# Filter dataset to a subset (e.g., 5 random examples)
-python eval/filter_dataset.py --size 5 --output eval/data/dataset_selected.json
-```
+The router is single-shot: no context between messages.
 
----
+## Key files
 
-## Architecture Overview
+| File                             | Role                                                           |
+| -------------------------------- | -------------------------------------------------------------- |
+| `main.py`                        | FastAPI app, `/chat` and `/health` endpoints, schemas          |
+| `router.py`                      | Scope classifier and canned out-of-scope reply                 |
+| `claude_client.py`               | Anthropic SDK wrapper, agent loop, `SYSTEM_PROMPT`             |
+| `prompts.py`                     | Routing prompt templates                                       |
+| `tools.py`                       | Tool functions, `TOOLS_SCHEMA`, HTTP calls to the shop backend |
+| `config.py`                      | Loads config from `.env`                                       |
+| `mcp_server.py`                  | MCP server, tool schemas (stdio)                               |
+| `mcp_client.py`                  | MCP client transport                                           |
+| `mcp_agent.py`                   | Agent loop for the MCP track                                   |
+| `eval/run_eval.py`               | Eval loop, production track                                    |
+| `eval/run_eval_mcp.py`           | Eval loop, MCP track                                           |
+| `eval/instrumented_agent.py`     | Test runner, production track                                  |
+| `eval/instrumented_mcp_agent.py` | Test runner, MCP track                                         |
+| `eval/eval_grading.py`           | Scoring: tool-call, groundedness, model-as-judge               |
+| `eval/data/dataset.json`         | Test cases (conversation, expected tool calls)                 |
+| `eval/results/eval_results.json` | Latest scores and reasoning (generated)                        |
 
-### Two-Track System
+## Tools
 
-The project demonstrates two architectural patterns running in parallel:
+- `search_products(query)`: keyword search over the catalog
+- `get_product(product_id)`: full product details
+- `recommend_products(product_id)`: related items
+- `check_availability(product_id)`: live stock count
 
-1. **Production Track (router.py + claude_client.py):**
-   - Lightweight **router** (Haiku, max_tokens=10) classifies user message as `in_scope` or `out_of_scope`
-   - **Out-of-scope** → immediate static reply
-   - **In-scope** → full agent loop with tool calling (direct local function execution)
-   - FastAPI endpoint exposes `/chat` for the Next.js frontend
+## Agent behavior (in `SYSTEM_PROMPT`)
 
-2. **Evaluation Track (mcp_agent.py + mcp_server.py):**
-   - Same agent logic, but tools are wrapped in an MCP server
-   - Agent communicates via `stdio` (standard input/output subprocesses)
-   - Validates that MCP adds no behavioral change (parity testing)
-   - Scores identical on both tracks (8.7/10 on production, 8.7/10 on MCP)
+- Never assume inventory from memory. Search before saying "we don't carry it".
+- Call `check_availability` for every stock question, even if a number was mentioned earlier.
 
-### Message Flow
+## Evaluation
 
-```
-User Message (session_id + text)
-    ↓
-FastAPI /chat endpoint (main.py)
-    ↓
-router.classify_scope() — is this a shopping question?
-    ├→ out_of_scope → OUT_OF_SCOPE_REPLY (instant)
-    └→ in_scope → handle_chat() in claude_client.py
-        ↓
-        Multi-turn agent loop (agentic with tool calling)
-        ├ search_products(query)
-        ├ get_product(product_id)
-        ├ recommend_products(product_id)
-        └ check_availability(product_id)
-        ↓
-        Supabase / Product DB
-        ↓
-        Claude response + tool results
-        ↓
-        Return to frontend
-```
+Final score is the average of three 0-10 scores: tool-call correctness, groundedness (no claims the tools did not return), and model-as-judge quality. Current baseline: see `eval/results/eval_results.json`.
 
-### Session State
+Haiku output varies between runs. After a prompt or tool change, run with `--trials 3` or more before deciding it helped.
 
-- Each POST to `/chat` includes a `session_id` (UUID generated by Next.js frontend)
-- Backend stores message history in-memory as a dictionary keyed by `session_id`
-- Reloading the browser generates a new `session_id`, starting fresh (intentional for prompt iteration)
-- **Production plan:** Migrate session dict from RAM to persistent database
+## Common tasks
 
----
+**Change the prompt:** edit `SYSTEM_PROMPT` in `claude_client.py`, then run `uv run python eval/run_eval.py --trials 3` and read `eval/results/eval_results.json`.
 
-## Key Files
+**Add a tool:**
 
-| File | Role |
-|------|------|
-| `main.py` | FastAPI app, `/chat` endpoint, request/response schemas |
-| `router.py` | Binary intent classifier (in_scope vs. out_of_scope), canned out-of-scope reply |
-| `claude_client.py` | High-level Anthropic SDK wrapper, multi-turn agent loop, tool calling orchestration |
-| `tools.py` | Low-level tool definitions, schemas (TOOLS_SCHEMA), and HTTP endpoints to live DB |
-| `config.py` | Config loading from `.env`: API keys, URLs |
-| `prompts.py` | System prompt and routing prompt templates |
-| `eval/instrumented_agent.py` | Test harness runner for production track (synchronous) |
-| `eval/instrumented_mcp_agent.py` | Test harness runner for MCP track (synchronous) |
-| `eval/run_eval.py` | Main evaluation loop for production track |
-| `eval/run_eval_mcp.py` | Main evaluation loop for MCP track |
-| `eval/eval_grading.py` | Scoring rubrics: tool-call correctness, groundedness, model-as-judge |
-| `eval/data/dataset.json` | Full test cases (user messages, expected tool calls, evaluation criteria) |
-| `eval/generate_eval_dataset.py` | Script to auto-generate test cases from templates |
-| `eval/filter_dataset.py` | Script to select a subset of test cases for quick iteration |
-| `mcp_agent.py` | MCP-based agent loop (CLI entry point for MCP track) |
-| `mcp_server.py` | MCP server setup (tool schema definitions, stdio transport) |
-| `mcp_client.py` | MCP client transport layer |
+1. Add the function and schema entry in `tools.py`.
+2. Register it in `claude_client.py::handle_chat()`.
+3. Add it to `mcp_server.py`.
+4. Update `SYSTEM_PROMPT` if the agent needs guidance on it.
+5. Add test cases to `eval/data/dataset.json`.
+6. Run both evals and check that the scores match.
 
----
+## Rules
 
-## Tool Capabilities
-
-When a message is routed as `in_scope`, the agent can call:
-
-- **`search_products(query: str)`** — Keyword search across product catalog (type, material, color, style)
-- **`get_product(product_id: str)`** — Fetch full product details, specs, and images
-- **`recommend_products(product_id: str)`** — Suggest related items based on taxonomy
-- **`check_availability(product_id: str)`** — Live stock count from transactional DB
-
-All tools call HTTP endpoints on `NORDIC_API_URL` (default: `http://localhost:3000`).
-
----
-
-## System Prompt Strategy
-
-**Key Design Principles:**
-
-1. **Router is Cheap Triage** — The router takes less than 0.5s and a few hundred tokens. It filters out off-topic chatter (recipes, weather, sports) before spinning up the expensive agentic loop.
-
-2. **Agent is Aware of Live Data** — The system prompt explicitly instructs the agent:
-   - Never assume you know inventory by heart
-   - Always search before saying "we don't carry it"
-   - Always call `check_availability()` on fresh stock questions, even if a number was mentioned earlier in the conversation
-
-3. **Multi-Trial Evaluation** — Because Haiku has sampling variance, test changes with `n_trials=3–5` to distinguish real behavioral shifts from ordinary model drift.
-
----
-
-## Evaluation Methodology
-
-**Three Scoring Dimensions:**
-
-1. **Tool-Call Score** (0–10): Did the agent call the right tools in the right order?
-   - Rubric in `eval_grading.py::grade_tool_call()`
-
-2. **Groundedness Score** (0–10): Does the response only claim facts the tools returned?
-   - Checks for hallucinations (e.g., claiming a product exists if search returned empty)
-
-3. **Model Score** (0–10): LLM-as-judge evaluation of overall quality, helpfulness, tone
-   - Uses `claude-sonnet-5` (heavier model for grading)
-   - Rubric in `eval_grading.py::grade_by_model()`
-
-**Final Score:** Average of the three (0–10 scale). Current baseline: **8.7/10**.
-
----
-
-## Common Development Tasks
-
-### Testing a Prompt Change
-
-1. Edit the system prompt in `claude_client.py` (search for `SYSTEM_PROMPT`)
-2. Run a quick single-trial evaluation:
-   ```bash
-   python eval/run_eval.py
-   ```
-3. If the change is subtle, run multi-trial to verify it's not sampling noise:
-   ```bash
-   python eval/run_eval.py --trials 5
-   ```
-4. Check `eval/results/eval_results.json` for detailed scores and reasoning
-
-### Adding a New Tool
-
-1. Define the HTTP endpoint in `tools.py` (function + schema entry in `TOOLS_SCHEMA`)
-2. Add the tool to Claude's tool list in `claude_client.py::handle_chat()`
-3. Add it to the MCP server schema in `mcp_server.py`
-4. Update the system prompt in `claude_client.py` with examples if needed
-5. Add test cases to `eval/data/dataset.json` that exercise the new tool
-6. Run evaluation to measure impact
-
-### Debugging a Test Case
-
-Each test case in `dataset.json` has an `id`, `conversation` (multi-turn), and expected `tool_calls`.
-
-To debug a single case:
-```python
-# In an interactive Python shell or script
-from eval.instrumented_agent import run_conversation
-test_case = {...}  # load from dataset.json
-result = run_conversation(test_case["conversation"])
-print("Reply:", result["reply"])
-print("Tool calls:", result["last_turn_tool_calls"])
-```
-
----
-
-## Important Constraints & Notes
-
-1. **Session State is Transient** — Browser refresh → new UUID → empty history. This is intentional for rapid prompt iteration. For production, migrate to persistent DB.
-
-2. **Router is Single-Shot** — No context carryover. Each message is classified independently. This is by design (cheap, fast, deterministic).
-
-3. **Tool Ordering Matters** — The agent must search before claiming a product doesn't exist. The system prompt reinforces this with examples.
-
-4. **Haiku Sampling Variance** — Model behavior can drift between runs. Use multi-trial evaluation after significant prompt changes to confirm improvement.
-
-5. **MCP Parity is the Goal** — Both architectures should score identically. If they diverge, check whether the MCP server is faithfully translating tool schemas and results.
-
----
-
-## Deployment Checklist
-
-- [ ] FastAPI server runs on port 8000 with no errors
-- [ ] `/health` endpoint returns `{"status": "ok"}`
-- [ ] `/chat` accepts session_id + message, returns reply
-- [ ] ANTHROPIC_API_KEY is set and valid
-- [ ] NORDIC_API_URL points to the correct backend (or localhost:3000 for dev)
-- [ ] Session state persisted to DB (if production; currently in-memory)
-- [ ] Evaluation suite passes with baseline score ≥ 8.5/10
-
----
-
-## Future Enhancements
-
-- Server-Sent Events (SSE) for token-by-token streaming to frontend
-- Persistent session storage (migrate from RAM to database)
-- Batch tool operations (e.g., `check_availability_multiple`) to reduce token overhead
-- Advanced failure-mode test cases for edge conditions
+- Run scripts from the project root. Build file paths with `Path(__file__).parent`; never rely on the current working directory (`eval/` scripts must work from anywhere).
+- Use `uv` only. Do not add dependencies without asking.
+- Do not edit anything in `eval/results/` by hand. Do not overwrite `eval/data/dataset.json` without asking.
+- Do not invent tools, product fields or API endpoints. If unsure, read the code or ask.
+- Any change to a tool must be made in all three places: `tools.py`, `claude_client.py`, `mcp_server.py`.
+- After changing prompts or tools, run `uv run python eval/run_eval.py --trials 3` and report the score.
+- Never print or commit API keys. Secrets live in `.env`.
+- Make a plan first for any change that touches more than 2 files.
