@@ -89,12 +89,11 @@ The router is single-shot: no context between messages.
 ## Agent behavior (in `prompts.py`)
 
 - Never assume inventory from memory. Search before saying "we don't carry it".
-- Call `check_availability` for every explicit stock question, even if a number was mentioned earlier.
-- The system prompt has a smart UNLESS clause: you can skip a re-search on follow-ups to earlier results — but NOT for fresh stock availability questions (rule 4 has no exception).
+- Follow-ups on results already found in this conversation may skip a re-search (UNLESS clause in rule 2). Stock questions never skip check_availability (rule 4 has no exception).
 
 ## Evaluation
 
-Final score is the average of three 0-10 scores: tool-call correctness, groundedness (no claims the tools did not return), and model-as-judge quality. Current baseline: **8.8/10**.
+Final score is the average of three 0-10 scores: tool-call correctness, groundedness (no claims the tools did not return), and model-as-judge quality. Current baseline: see `eval/results/eval_results.json`.
 
 Haiku output varies between runs. After a prompt or tool change, run with `--trials 3` or more before deciding it helped.
 
@@ -117,7 +116,7 @@ Haiku output varies between runs. After a prompt or tool change, run with `--tri
 - Use `uv` only. Do not add dependencies without asking.
 - Do not edit anything in `eval/results/` by hand. Do not overwrite `eval/data/dataset.json` without asking.
 - Do not invent tools, product fields or API endpoints. If unsure, read the code or ask.
-- **Tool registration:** SYSTEM_PROMPT is in `prompts.py` (single source of truth). Tools are defined in three places — `TOOLS_SCHEMA` in `tools.py`, `TOOL_FUNCTIONS` dict in `claude_client.py`, and `@mcp.tool()` decorators in `mcp_server.py`. Each place uses a different mechanism. The critical sync point: **tool descriptions in TOOLS_SCHEMA and in the mcp_server.py docstrings must say the same thing**, otherwise production and MCP eval will see different behavior.
+- Tool descriptions in TOOLS_SCHEMA and in mcp_server.py docstrings must be identical, otherwise the two tracks behave differently.
 - After changing prompts or tools, run `uv run python eval/run_eval.py --trials 3` and report the score.
 - Never print or commit API keys. Secrets live in `.env`.
 - Make a plan first for any change that touches more than 2 files.
