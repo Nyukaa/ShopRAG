@@ -30,7 +30,7 @@ curl -X POST http://localhost:8000/chat \
   -H "Content-Type: application/json" \
   -d '{"session_id": "test-123", "message": "Do you have oak lamps?"}'
 
-# Eval, production track (add --trials 3 to measure variance)
+# Eval, production track (default 1 trial; use --trials 3 to measure variance)
 uv run python eval/run_eval.py
 uv run python eval/run_eval.py --trials 3
 
@@ -64,14 +64,14 @@ The router is single-shot: no context between messages.
 | -------------------------------- | -------------------------------------------------------------- |
 | `main.py`                        | FastAPI app, `/chat` and `/health` endpoints, schemas          |
 | `router.py`                      | Scope classifier and canned out-of-scope reply                 |
-| `claude_client.py`               | Anthropic SDK wrapper, agent loop, `SYSTEM_PROMPT`             |
-| `prompts.py`                     | Routing prompt templates                                       |
-| `tools.py`                       | Tool functions, `TOOLS_SCHEMA`, HTTP calls to the shop backend |
+| `prompts.py`                     | System prompt (single source of truth)                         |
+| `claude_client.py`               | Anthropic SDK wrapper, agent loop, imports SYSTEM_PROMPT       |
+| `tools.py`                       | Tool functions, `TOOLS_SCHEMA` (JSON schema), HTTP calls       |
 | `config.py`                      | Loads config from `.env`                                       |
-| `mcp_server.py`                  | MCP server, tool schemas (stdio)                               |
+| `mcp_server.py`                  | MCP server, tool schemas (stdio transport)                     |
 | `mcp_client.py`                  | MCP client transport                                           |
 | `mcp_agent.py`                   | Agent loop for the MCP track                                   |
-| `eval/run_eval.py`               | Eval loop, production track                                    |
+| `eval/run_eval.py`               | Eval loop, production track (add `--trials 3` to measure)      |
 | `eval/run_eval_mcp.py`           | Eval loop, MCP track                                           |
 | `eval/instrumented_agent.py`     | Test runner, production track                                  |
 | `eval/instrumented_mcp_agent.py` | Test runner, MCP track                                         |
@@ -86,10 +86,10 @@ The router is single-shot: no context between messages.
 - `recommend_products(product_id)`: related items
 - `check_availability(product_id)`: live stock count
 
-## Agent behavior (in `SYSTEM_PROMPT`)
+## Agent behavior (in `prompts.py`)
 
 - Never assume inventory from memory. Search before saying "we don't carry it".
-- Call `check_availability` for every stock question, even if a number was mentioned earlier.
+- Follow-ups on results already found in this conversation may skip a re-search (UNLESS clause in rule 2). Stock questions never skip check_availability (rule 4 has no exception).
 
 ## Evaluation
 
@@ -99,14 +99,14 @@ Haiku output varies between runs. After a prompt or tool change, run with `--tri
 
 ## Common tasks
 
-**Change the prompt:** edit `SYSTEM_PROMPT` in `claude_client.py`, then run `uv run python eval/run_eval.py --trials 3` and read `eval/results/eval_results.json`.
+**Change the prompt:** edit `SYSTEM_PROMPT` in `prompts.py`, then run `uv run python eval/run_eval.py --trials 3` and read `eval/results/eval_results.json`.
 
 **Add a tool:**
 
-1. Add the function and schema entry in `tools.py`.
-2. Register it in `claude_client.py::handle_chat()`.
-3. Add it to `mcp_server.py`.
-4. Update `SYSTEM_PROMPT` if the agent needs guidance on it.
+1. **`tools.py`:** Add the async function and add an entry to `TOOLS_SCHEMA` (the JSON schema dict list). The schema defines `name`, `description`, and `input_schema` for the Anthropic API.
+2. **`claude_client.py`:** Add the function to the `TOOL_FUNCTIONS` dict (maps tool names to functions for local execution).
+3. **`mcp_server.py`:** Add a wrapper function with `@mcp.tool()` decorator. FastMCP generates the schema from the function's type hints and docstring, so **tool descriptions in TOOLS_SCHEMA and in the mcp_server.py docstrings must be identical**, otherwise the two tracks will behave differently.
+4. Update `SYSTEM_PROMPT` in `prompts.py` if the agent needs guidance on it.
 5. Add test cases to `eval/data/dataset.json`.
 6. Run both evals and check that the scores match.
 
@@ -116,7 +116,7 @@ Haiku output varies between runs. After a prompt or tool change, run with `--tri
 - Use `uv` only. Do not add dependencies without asking.
 - Do not edit anything in `eval/results/` by hand. Do not overwrite `eval/data/dataset.json` without asking.
 - Do not invent tools, product fields or API endpoints. If unsure, read the code or ask.
-- Any change to a tool must be made in all three places: `tools.py`, `claude_client.py`, `mcp_server.py`.
+- Tool descriptions in TOOLS_SCHEMA and in mcp_server.py docstrings must be identical, otherwise the two tracks behave differently.
 - After changing prompts or tools, run `uv run python eval/run_eval.py --trials 3` and report the score.
 - Never print or commit API keys. Secrets live in `.env`.
 - Make a plan first for any change that touches more than 2 files.
