@@ -49,6 +49,7 @@ nordic-shop-agent/.venv/
 nordic-shop-agent/__pycache__/
 nordic-shop-agent/*.pyc
 nordic-shop-agent/.env
+nordic-shop-agent/eval/results/eval_results.json
 
 # typescript
 *.tsbuildinfo
