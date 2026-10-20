@@ -117,3 +117,53 @@ async def handle_chat(session_id: str, user_message: str) -> str:
             )
 
         add_user_message(history, tool_results)
+
+#experiment with streaming variant of handle_chat, yielding JSON events instead of returning a single response
+async def handle_chat_stream(session_id: str, user_message: str):
+    """Streaming variant: same agent loop and session history as handle_chat,
+    but yields JSON events instead of returning a single response."""
+    history = get_history(session_id)
+    add_user_message(history, user_message)
+
+    try:
+        while True:
+            async with client.messages.stream(
+                model=model,
+                max_tokens=1000,
+                system=SYSTEM_PROMPT,
+                tools=TOOLS_SCHEMA,
+                messages=history,
+            ) as stream:
+                # Stream text blocks as they arrive
+                async for event in stream:
+                    if event.type == "content_block_delta":
+                        if hasattr(event.delta, "text"):
+                            yield json.dumps({"type": "text", "text": event.delta.text})
+
+                # Get final message and add to history
+                response = await stream.get_final_message()
+                add_assistant_message(history, response)
+
+                # Check if we need to execute tools
+                if response.stop_reason == "tool_use":
+                    tool_results = []
+                    for block in response.content:
+                        if block.type == "tool_use":
+                            yield json.dumps({"type": "tool", "name": block.name})
+                            result = await execute_tool(block.name, block.input)
+                            tool_results.append(
+                                {
+                                    "type": "tool_result",
+                                    "tool_use_id": block.id,
+                                    "content": json.dumps(result),
+                                }
+                            )
+
+                    add_user_message(history, tool_results)
+                else:
+                    # No more tools, stream is complete
+                    yield json.dumps({"type": "done"})
+                    break
+    except Exception as e:
+        yield json.dumps({"type": "error", "message": str(e)})
+        yield json.dumps({"type": "done"})
